@@ -1,22 +1,21 @@
 {
-  "name": "@phntms/PACKAGE-NAME",
-  "description": "Description, same as overview one-liner from README.md.",
+  "name": "@phntms/ft-lib",
+  "description": "A collection of Javascript UI & tracking utils for FT sites",
   "version": "0.0.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "homepage": "https://github.com/phantomstudios/PACKAGE-NAME#readme",
+  "homepage": "https://github.com/phantomstudios/ft-lib#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/phantomstudios/PACKAGE-NAME.git"
+    "url": "https://github.com/phantomstudios/ft-lib.git"
   },
   "bugs": {
-    "url": "https://github.com/phantomstudios/PACKAGE-NAME/issues"
+    "url": "https://github.com/phantomstudios/ft-lib/issues"
   },
   "keywords": [
-    "react",
-    "hooks",
-    "hook",
-    "react-hook"
+    "FT",
+    "tracking",
+    "Permutive"
   ],
   "scripts": {
     "build": "tsc",
@@ -34,16 +33,11 @@
     "fix:format": "prettier \"**/*.{md,html,yaml,yml}\" --write",
     "depcheck": "npx npm-check --update"
   },
-  "author": "John Chipps-Harding (john.chipps-harding@phntms.com)",
+  "author": "Dhia Shakiry (dhia@phntms.com)",
   "license": "MIT",
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
   "devDependencies": {
     "@babel/preset-env": "^7.14.2",
     "@babel/preset-typescript": "^7.13.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/react-hooks": "^6.0.0",
     "@types/jest": "^26.0.23",
     "@types/react": "^17.0.6",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
