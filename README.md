@@ -4,11 +4,12 @@
 [![Actions Status][ci-image]][ci-url]
 [![PR Welcome][npm-downloads-image]][npm-downloads-url]
 
-A collection of Javascript utils for shareable UI and tracking functionality across Phantom FT sites 
+A collection of Javascript utils for shareable UI and tracking functionality across Phantom FT sites
 
 ## Introduction
 
 currently implemented:
+
 - consentMonitor - polls the FT consent cookies set by the approved FT Origami cookie banner to enable/disable the FT Permutive ad tracking
 - permutiveVideoUtils - formatted permutive video progress events
 
