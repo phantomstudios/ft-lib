@@ -1,14 +1,27 @@
-import useLibrary from "../src";
-import { renderHook } from "@testing-library/react-hooks";
+import { consentMonitor } from "../src/consentMonitor";
+import { permutiveVideoUtils } from "../src/permutiveVideoUtils";
 
-describe("performs requests", () => {
-  it("should work with 1 argument", async () => {
-    const { result } = renderHook(() => useLibrary({argument1:10}));
-    expect(result.current.something).toEqual(10);
+describe("consentMonitor", () => {
+  it("can be initiated", () => {
+    const obj = new consentMonitor();
+    expect(obj.consent).toBe(false);
   });
+  it("sets default dev hosts property", async () => {
+    const obj = new consentMonitor();
+    expect(obj.devHosts).toEqual(["localhost", "phq"]);
+  });
+  //TODO - mock document.cookie get/set and test consent value
+});
 
-  it("should work with 2 arguments", async () => {
-    const { result } = renderHook(() => useLibrary({argument1:10, argument2: 6}));
-    expect(result.current.something).toEqual(16);
+describe("Permutive video progress utils", () => {
+  it("can be initiated", () => {
+    const permutiveVideoTracker = new permutiveVideoUtils(
+      "FT-Campaign",
+      "video title",
+      "videoID"
+    );
+    expect(permutiveVideoTracker.remainingProgress).toEqual([
+      0, 0.25, 0.5, 0.75, 1,
+    ]);
   });
 });

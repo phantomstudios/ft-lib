@@ -9,17 +9,8 @@ A collection of Javascript utils for shareable UI and tracking functionality acr
 ## Introduction
 
 currently implemented:
-consentMonitor - polls the FT consent cookies to enable/disable the FT Permutive ad tracking
-permutiveVideoUtils - formatted permutive video progress event
-
-```javascript
-import useLibrary from "@phntms/ft-lib";
-
-const { something } = useLibrary({
-  argument1: "something",
-  argument2: "something else",
-});
-```
+- consentMonitor - polls the FT consent cookies set by the approved FT Origami cookie banner to enable/disable the FT Permutive ad tracking
+- permutiveVideoUtils - formatted permutive video progress events
 
 ## Installation
 
@@ -31,62 +22,32 @@ npm i @phntms/ft-lib
 
 ## Usage
 
-Example 1 description.
+consentMonitor - Adds an FT consent cookie poller to enable/disable Permutive consent (only useful if 'consentRequired' is set as an option in the site's Permutive script - see here[https://support.permutive.com/hc/en-us/articles/360010845519-Seeking-User-Consent#h_00327830-509b-422a-952b-1906264031f1])
+The optional constructor arg (default ["localhost", "phq"]) accepts a string or array of strings to includes match 
+The utility also includes an FT banner event listener ((see here[https://registry.origami.ft.com/components/o-cookie-message@6.0.1/readme?brand=master] for a list of banner DOM events) to set session-level cookies for development environments
 
-```JSX
-import React from 'react';
-import useLibrary from '@phntms/PACKAGE-NAME';
+```Javascript
+import { consentMonitor } from "@phntms/ft-lib";
 
-const SomeExample = () = {
-  const { something } = useApi({
-    argument1: "something",
-    argument2: "something else",
-  });
-
-  return (
-    <>
-      <h1>Result</h2>
-      <p>{something}</p>
-    </>
-  );
-}
+new consentMonitor(["localhost", "phq", "staging"]);
 ```
 
-Example 2 description.
+permutiveVideoUtils - emitPermutiveProgressEvents - used within a video player's progress event handler to fire Permutive video progress events at [0, 25, 50, 75, 100] percent progress.
+Optional 3rd arg to pass a window.interval instance to be cleared once progress is complete.
 
-```JSX
-import React from 'react';
-import useLibrary from '@phntms/PACKAGE-NAME';
+```Javascript
+import { permutiveVideoUtils } from "@phntms/ft-lib";
 
-const SomeExample2 = () = {
-  const { something } = useApi({
-    argument1: "something",
-    argument2: "something else",
-  });
+const permutivevideoTracker = new permutiveVideoUtils("<FT CAMPAIGN>","<VIDEO-TITLE>","<VIDEO-ID/URL>")  //Data will be site implementation specific
 
-  return (
-    <>
-      <h1>Result</h2>
-      <p>{something}</p>
-    </>
-  );
-}
+player.on("progress", () => {   //event will be video player site implementation specific
+   permutivevideoTracker.emitPermutiveProgressEvent(<DURATION>, <CURRENTTIME>, <OPTIONAL-WINDOW-INTERVAL>)
+});
 ```
 
-## API
-
-### Input
-
-- `argument1` : Required - Description of argument.
-- `argument2` : Optional - Description of argument.
-
-### Output
-
-- `something`: Description of output.
-
-[npm-image]: https://img.shields.io/npm/v/@phntms/PACKAGE-NAME.svg?style=flat-square&logo=react
-[npm-url]: https://npmjs.org/package/@phntms/PACKAGE-NAME
-[npm-downloads-image]: https://img.shields.io/npm/dm/@phntms/PACKAGE-NAME.svg
-[npm-downloads-url]: https://npmcharts.com/compare/@phntms/PACKAGE-NAME?minimal=true
-[ci-image]: https://github.com/phantomstudios/PACKAGE-NAME/workflows/test/badge.svg
-[ci-url]: https://github.com/phantomstudios/PACKAGE-NAME/actions
+[npm-image]: https://img.shields.io/npm/v/@phntms/ft-lib.svg?style=flat-square&logo=react
+[npm-url]: https://npmjs.org/package/@phntms/ft-lib
+[npm-downloads-image]: https://img.shields.io/npm/dm/@phntms/ft-lib.svg
+[npm-downloads-url]: https://npmcharts.com/compare/@phntms/ft-lib?minimal=true
+[ci-image]: https://github.com/phantomstudios/ft-lib/workflows/test/badge.svg
+[ci-url]: https://github.com/phantomstudios/ft-lib/actions

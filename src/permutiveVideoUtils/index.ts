@@ -1,4 +1,5 @@
-
+import Debug from "debug";
+const debug = Debug("@phntms/ft-lib");
 export class permutiveVideoUtils {
   protected progressPermutiveMilestones: number[] = [0, 0.25, 0.5, 0.75, 1];
   protected _campaign: string;
@@ -6,12 +7,16 @@ export class permutiveVideoUtils {
   protected _videoId: string;
 
   constructor(campaign: string, title: string, videoId: string) {
-        this._campaign = campaign;
-        this._title = title;
-        this._videoId = videoId;
+    this._campaign = campaign;
+    this._title = title;
+    this._videoId = videoId;
   }
 
-  emitPermutiveProgressEvents = (
+  get remainingProgress(): number[] {
+    return this.progressPermutiveMilestones;
+  }
+
+  emitPermutiveProgressEvent = (
     duration: number,
     currentTime: number,
     interval: any = undefined
@@ -19,9 +24,11 @@ export class permutiveVideoUtils {
     const progress = currentTime / (Math.floor(duration) - 1);
 
     while (
-      progress >= this.progressPermutiveMilestones[0] && currentTime > 0 &&
+      progress >= this.progressPermutiveMilestones[0] &&
+      currentTime > 0 &&
       window.permutive
     ) {
+      debug("Emit videoEngagement permutive event");
       window.permutive.track("VideoEngagement", {
         campaign: this._campaign,
         createdAt: new Date().toISOString(),
