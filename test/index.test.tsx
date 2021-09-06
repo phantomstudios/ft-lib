@@ -17,7 +17,7 @@ describe("consentMonitor", () => {
       "phq",
       "devhost",
     ]);
-    expect(obj.devEnvironmentYN).toBe(true);
+    expect(obj.isDevEnvironment).toBe(true);
   });
   //TODO - mock document.cookie get/set and test consent value
 });

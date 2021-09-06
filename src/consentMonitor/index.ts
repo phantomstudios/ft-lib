@@ -8,7 +8,7 @@ const debug = Debug("@phntms/ft-lib");
 export class consentMonitor {
   protected _consent = false;
   protected _devHosts: string[] | string;
-  protected _devEnvironmentYN = false;
+  protected _isDevEnvironment = false;
   protected _hostname: string;
 
   constructor(
@@ -28,8 +28,8 @@ export class consentMonitor {
     return this._devHosts;
   }
 
-  get devEnvironmentYN(): boolean {
-    return this._devEnvironmentYN;
+  get isDevEnvironment(): boolean {
+    return this._isDevEnvironment;
   }
 
   getCookieValue = (name: string) =>
@@ -77,7 +77,7 @@ export class consentMonitor {
   };
 
   setDevCookieHandler = () => {
-    this._devEnvironmentYN = true;
+    this._isDevEnvironment = true;
     debug("setting development environment from host match");
     const oCookieMessage =
       document.getElementsByClassName("o-cookie-message")[0];
