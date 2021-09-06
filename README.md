@@ -23,14 +23,13 @@ npm i @phntms/ft-lib
 
 ## Usage
 
-consentMonitor - Adds an FT consent cookie poller to enable/disable Permutive consent (only useful if 'consentRequired' is set as an option in the site's Permutive script - see here[https://support.permutive.com/hc/en-us/articles/360010845519-Seeking-User-Consent#h_00327830-509b-422a-952b-1906264031f1])
-The optional constructor arg (default ["localhost", "phq"]) accepts a string or array of strings to includes match against window.location.host.
-The utility also includes an FT banner event listener ((see here[https://registry.origami.ft.com/components/o-cookie-message@6.0.1/readme?brand=master] for a list of banner DOM events) to set session-level cookies for development environments
+consentMonitor - Adds an FT consent cookie poller to enable/disable Permutive consent (only useful if 'consentRequired' is set as an option in the site's Permutive script - see [here](https://support.permutive.com/hc/en-us/articles/360010845519-Seeking-User-Consent#h_00327830-509b-422a-952b-1906264031f1)
+There are optional constructor args for the hostname (defaults to window.location.hostname) and the dev environment host matches (defaults to ["localhost", "phq", "vercel.app"]) which are used to determine development environments in order to generate an FT banner event listener ((see [here](https://registry.origami.ft.com/components/o-cookie-message@6.0.1/readme?brand=master) for a list of banner DOM events) to set session-level cookies for development environments
 
 ```Javascript
 import { consentMonitor } from "@phntms/ft-lib";
 
-new consentMonitor(["localhost", "phq", "staging"]);
+new consentMonitor("FT.staging.testsite.com". ["localhost", "phq", "staging"]);
 ```
 
 permutiveVideoUtils - emitPermutiveProgressEvents - used within a video player's progress event handler to fire Permutive video progress events at [0, 25, 50, 75, 100] percent progress.

@@ -7,8 +7,17 @@ describe("consentMonitor", () => {
     expect(obj.consent).toBe(false);
   });
   it("sets default dev hosts property", async () => {
-    const obj = new consentMonitor();
-    expect(obj.devHosts).toEqual(["localhost", "phq"]);
+    const obj = new consentMonitor("https://FT-staging.com");
+    expect(obj.devHosts).toEqual(["localhost", "phq", "vercel.app"]);
+  });
+  it("matches hostname to devHosts", async () => {
+    const obj = new consentMonitor("https://FT-staging.devhost.com", [
+      "localhost",
+      "vercel.app",
+      "phq",
+      "devhost",
+    ]);
+    expect(obj.isDevEnvironment).toBe(true);
   });
   //TODO - mock document.cookie get/set and test consent value
 });

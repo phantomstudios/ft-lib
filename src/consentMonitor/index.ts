@@ -8,9 +8,15 @@ const debug = Debug("@phntms/ft-lib");
 export class consentMonitor {
   protected _consent = false;
   protected _devHosts: string[] | string;
+  protected _isDevEnvironment = false;
+  protected _hostname: string;
 
-  constructor(devHosts: string[] | string = ["localhost", "phq"]) {
+  constructor(
+    hostname: string = window.location.hostname,
+    devHosts: string[] | string = ["localhost", "phq", "vercel.app"]
+  ) {
     this._devHosts = devHosts;
+    this._hostname = hostname;
     this.init();
   }
 
@@ -20,6 +26,10 @@ export class consentMonitor {
 
   get devHosts(): string[] | string {
     return this._devHosts;
+  }
+
+  get isDevEnvironment(): boolean {
+    return this._isDevEnvironment;
   }
 
   getCookieValue = (name: string) =>
@@ -56,26 +66,33 @@ export class consentMonitor {
     }, 3000);
 
     //Simulate cookie consent behaviour in non-prod environments - TODO confirm best non production conditional..
-    if (this._devHosts.includes(window.location.hostname)) {
-      debug("setting development environment from host match");
-      const oCookieMessage =
-        document.getElementsByClassName("o-cookie-message")[0];
-      if (oCookieMessage) {
-        const onCookieMessageAct = () => {
-          debug("setting development FT consent cookies");
-          document.cookie = "FTConsent=behaviouraladsOnsite%3Aon";
-          document.cookie = "FTCookieConsentGDPR=true";
-          oCookieMessage.removeEventListener(
-            "oCookieMessage.act",
-            onCookieMessageAct,
-            false
-          );
-        };
-        oCookieMessage.addEventListener(
+    if (Array.isArray(this._devHosts)) {
+      this._devHosts.map(
+        (devHost) =>
+          this._hostname.includes(devHost) && this.setDevCookieHandler()
+      );
+    } else {
+      if (this._hostname.includes(this._devHosts)) this.setDevCookieHandler();
+    }
+  };
+
+  setDevCookieHandler = () => {
+    this._isDevEnvironment = true;
+    debug("setting development environment from host match");
+    const oCookieMessage =
+      document.getElementsByClassName("o-cookie-message")[0];
+    if (oCookieMessage) {
+      const onCookieMessageAct = () => {
+        debug("setting development FT consent cookies");
+        document.cookie = "FTConsent=behaviouraladsOnsite%3Aon";
+        document.cookie = "FTCookieConsentGDPR=true";
+        oCookieMessage.removeEventListener(
           "oCookieMessage.act",
-          onCookieMessageAct
+          onCookieMessageAct,
+          false
         );
-      }
+      };
+      oCookieMessage.addEventListener("oCookieMessage.act", onCookieMessageAct);
     }
   };
 }
