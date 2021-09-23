@@ -10,6 +10,7 @@ export class consentMonitor {
   protected _devHosts: string[] | string;
   protected _isDevEnvironment = false;
   protected _hostname: string;
+  protected _isInitialized = false;
 
   constructor(
     hostname: string = window.location.hostname,
@@ -32,6 +33,10 @@ export class consentMonitor {
     return this._isDevEnvironment;
   }
 
+  get isInitialized(): boolean {
+    return this._isInitialized;
+  }
+
   getCookieValue = (name: string) =>
     document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
 
@@ -40,6 +45,10 @@ export class consentMonitor {
     so we need to actively monitor consent cookie changes */
     window.setInterval(() => {
       if (window.permutive) {
+        if (!this._isInitialized) {
+          window.permutive.consent({ opt_in: false });
+          this._isInitialized = true;
+        }
         if (
           this.getCookieValue("FTConsent").includes(
             "behaviouraladsOnsite%3Aon"
