@@ -1,6 +1,16 @@
 import { consentMonitor } from "../src/consentMonitor";
 import { permutiveVideoUtils } from "../src/permutiveVideoUtils";
 
+let windowSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  windowSpy = jest.spyOn(window, "window", "get");
+});
+
+afterEach(() => {
+  windowSpy.mockRestore();
+});
+
 describe("consentMonitor", () => {
   it("can be initiated", () => {
     const obj = new consentMonitor();
@@ -19,18 +29,35 @@ describe("consentMonitor", () => {
     ]);
     expect(obj.isDevEnvironment).toBe(true);
   });
-  //TODO - mock document.cookie get/set and test consent value
-});
 
-describe("Permutive video progress utils", () => {
-  it("can be initiated", () => {
-    const permutiveVideoTracker = new permutiveVideoUtils(
-      "FT-Campaign",
-      "video title",
-      "videoID"
-    );
-    expect(permutiveVideoTracker.remainingProgress).toEqual([
-      0, 0.25, 0.5, 0.75, 1,
+  it("Initializes correctly", async () => {
+    jest.useFakeTimers();
+    windowSpy.mockImplementation(() => ({
+      permutive: {
+        consent: ({}) => {
+          return {};
+        },
+      },
+    }));
+    const obj = new consentMonitor("https://FT-staging.devhost.com", [
+      "localhost",
+      "vercel.app",
+      "phq",
+      "devhost",
     ]);
+    expect(obj.isInitialized).toBe(true);
+  });
+  //TODO - mock document.cookie get/set and test consent value
+  describe("Permutive video progress utils", () => {
+    it("can be initiated", () => {
+      const permutiveVideoTracker = new permutiveVideoUtils(
+        "FT-Campaign",
+        "video title",
+        "videoID"
+      );
+      expect(permutiveVideoTracker.remainingProgress).toEqual([
+        0, 0.25, 0.5, 0.75, 1,
+      ]);
+    });
   });
 });
