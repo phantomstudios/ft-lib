@@ -1,19 +1,26 @@
 import Debug from "debug";
 const debug = Debug("@phntms/ft-lib");
 
+const DEFAULT_DEV_HOSTS = ["localhost", "phq", "vercel.app"];
+
 export class consentMonitor {
   protected _consent = false;
-  protected _devHosts: string[] | string;
+  protected _devHosts: string[];
   protected _isDevEnvironment = false;
   protected _hostname: string;
   protected _isInitialized = false;
 
-  constructor(
-    hostname: string = window.location.hostname,
-    devHosts: string[] | string = ["localhost", "phq", "vercel.app"]
-  ) {
-    this._devHosts = devHosts;
-    this._hostname = hostname;
+  constructor(hostname?: string, devHosts?: string[] | string) {
+    if (Array.isArray(devHosts)) {
+      this._devHosts = devHosts.concat(DEFAULT_DEV_HOSTS);
+    } else if (devHosts === undefined) {
+      this._devHosts = DEFAULT_DEV_HOSTS;
+    } else {
+      this._devHosts = DEFAULT_DEV_HOSTS;
+      this._devHosts.push(devHosts);
+    }
+
+    this._hostname = hostname || window.location.hostname;
     this.init();
   }
 
@@ -41,14 +48,10 @@ export class consentMonitor {
     global.setInterval(this.cookieConsentTest, 3000);
 
     //Simulate cookie consent behaviour in non-prod environments
-    if (Array.isArray(this._devHosts)) {
-      this._devHosts.map(
-        (devHost) =>
-          this._hostname.includes(devHost) && this.setDevCookieHandler()
-      );
-    } else {
-      if (this._hostname.includes(this._devHosts)) this.setDevCookieHandler();
-    }
+    this._devHosts.map(
+      (devHost) =>
+        this._hostname.includes(devHost) && this.setDevCookieHandler()
+    );
   };
 
   cookieConsentTest = () => {
