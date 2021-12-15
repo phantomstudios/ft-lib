@@ -18,7 +18,7 @@ describe("consentMonitor", () => {
   });
   it("sets default dev hosts property", async () => {
     const obj = new consentMonitor("https://FT-staging.com");
-    expect(obj.devHosts).toEqual(["localhost", "phq", "vercel.app"]);
+    expect(obj.devHosts).toEqual(["localhost", "phq", ".app", "preview"]);
   });
   it("matches hostname to devHosts", async () => {
     const obj = new consentMonitor("https://FT-staging.devhost.com", [
