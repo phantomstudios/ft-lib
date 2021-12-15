@@ -43,7 +43,7 @@ Optional 3rd arg to pass a window.interval instance to be cleared once progress 
 ```Javascript
 import { permutiveVideoUtils } from "@phntms/ft-lib";
 
-const permutivevideoTracker = new permutiveVideoUtils("<FT CAMPAIGN>","<VIDEO-TITLE>","<VIDEO-ID/URL>")  //Data will be site implementation specific
+const permutivevideoTracker = new permutiveVideoUtils("<FT-CAMPAIGN>","<VIDEO-TITLE>","<VIDEO-ID/URL>")  //Data will be site implementation specific
 
 player.on("progress", () => {   //event will be video player site implementation specific
    permutivevideoTracker.emitPermutiveProgressEvent(<DURATION>, <CURRENTTIME>, <OPTIONAL-WINDOW-INTERVAL>)
@@ -52,10 +52,38 @@ player.on("progress", () => {   //event will be video player site implementation
 
 ### reactPlayerTracking
 
+Exports video event handlers that broadcast the required GA, oTracking and Permutive events.
+NOTE: Currently implemented for react-player implementations only but will be expanded to handle other video player implementations (Youtube Iframe API players specifically) which require slightly different 'progress' monitoring.
+
+The constructor takes the parent site's oTracking/Origami eventDispatcher function and video and site meta data (as required for the tracking data), along with an optional `options` object (see below)
+
+Typical implementation:
+
 ```Javascript
 import { reactPlayerTracking } from "@phntms/ft-lib";
 
-new consentMonitor("FT.staging.testsite.com". ["localhost", "phq", "staging"]);
+const [videoTracker] = useState(
+   new reactPlayerTracking(eventDispatcher, <VIDEO-TITLE>, <VIDEO-URL>,<FT-CAMPAIGN>,
+    { isPermutiveTracking: true },
+   ),
+)
+
+<ReactPlayer
+   onDuration={videoTracker.setDuration}
+   onEnded={videoTracker.trackEnded}
+   onPause={videoTracker.trackPause}
+   onPlay={videoTracker.trackPlay}
+   onProgress={videoTracker.trackProgress}
+>
+```
+
+### Default Options:
+
+```
+  isPermutiveTracking: false,
+  routeUrl: window.location.href,
+  category: "video",
+  product: "paid-post",
 ```
 
 [npm-image]: https://img.shields.io/npm/v/@phntms/ft-lib.svg?style=flat-square&logo=react

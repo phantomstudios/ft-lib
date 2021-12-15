@@ -5,8 +5,6 @@ import { permutiveVideoUtils } from "../permutiveVideoUtils";
 const debug = Debug("@phntms/ft-lib");
 
 interface Options {
-  isOTracking?: boolean;
-  isGATracking?: boolean;
   isPermutiveTracking?: boolean;
   routeUrl?: string;
   /** video/article/stream  */
@@ -16,11 +14,9 @@ interface Options {
 }
 
 const DEFAULT_OPTIONS = {
-  isOTracking: true,
-  isGATracking: true,
   isPermutiveTracking: false,
   routeUrl: typeof window !== "undefined" ? window.location.href : undefined,
-  category: "Video",
+  category: "video",
   product: "paid-post",
 };
 
@@ -35,8 +31,8 @@ export class reactPlayerTracking {
   duration = 0;
   playedSeconds = 0;
   playedPercent = 0;
-  oTrackingEvent: any;
-  gaTrackingEvent: any;
+  oTrackingEvent: ({}) => void;
+  gaDataLayer: Window["dataLayer"];
   videoTitle: string;
   videoUrl: string;
   campaign: string;
@@ -49,8 +45,6 @@ export class reactPlayerTracking {
   constructor(
     /** oTracking dispatch event function */
     oTrackingEvent: any,
-    /** gaTracking dispatch event function */
-    gaTrackingEvent: any,
     /** video page title */
     videoTitle: string,
     /** video/youtube url or youtube ID */
@@ -61,7 +55,7 @@ export class reactPlayerTracking {
     options?: Options
   ) {
     this.oTrackingEvent = oTrackingEvent;
-    this.gaTrackingEvent = gaTrackingEvent;
+    this.gaDataLayer = typeof window !== "undefined" && window.dataLayer;
     this.videoTitle = videoTitle;
     this.videoUrl = videoUrl;
     this.campaign = campaign;
@@ -80,14 +74,19 @@ export class reactPlayerTracking {
   };
 
   sendGAEvent = (action: string) => {
-    this.gaTrackingEvent({
-      action: action,
-      category: this.options.category,
-      label: this.videoTitle,
-    });
+    if (this.gaDataLayer) {
+      debug("GA datalayer push - " + action);
+      this.gaDataLayer.push({
+        event: "customEvent",
+        action: action,
+        category: this.options.category,
+        label: this.videoTitle,
+      });
+    }
   };
 
   sendoTrackingEvent = (action: string, progress?: number) => {
+    debug("oTracking event - " + action);
     this.oTrackingEvent({
       category: this.options.category,
       action: action,
@@ -127,17 +126,20 @@ export class reactPlayerTracking {
     }
 
     while (this.playedPercent >= this.GA_milestones[0]) {
+      debug("GA progress milestone - " + this.GA_milestones[0]);
       this.sendGAEvent(`${this.GA_milestones[0]}% watched`);
       this.GA_milestones.shift();
     }
 
     while (this.playedPercent >= this.oTracking_milestones[0]) {
+      debug("oTracking progress milestone - " + this.oTracking_milestones[0]);
       this.sendoTrackingEvent("progress", this.oTracking_milestones[0]);
       this.oTracking_milestones.shift();
     }
 
     //permutive only tracks progress events and contains its own milestones
     if (this.options.isPermutiveTracking) {
+      debug("edit permutive progress event- " + this.playedSeconds);
       this.permutiveTracker?.emitPermutiveProgressEvent(
         this.duration,
         this.playedSeconds
