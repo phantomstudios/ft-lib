@@ -1,7 +1,7 @@
 import Debug from "debug";
 const debug = Debug("@phntms/ft-lib");
 
-const DEFAULT_DEV_HOSTS = ["localhost", "phq", "vercel.app"];
+const DEFAULT_DEV_HOSTS = ["localhost", "phq", ".app", "preview"];
 
 export class consentMonitor {
   protected _consent = false;

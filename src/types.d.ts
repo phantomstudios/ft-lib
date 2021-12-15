@@ -1,4 +1,5 @@
 interface Window {
+  dataLayer: any;
   permutive: {
     addon: any;
     consent: CallableConsent;
@@ -13,4 +14,14 @@ interface ConsentOptions {
 
 interface CallableConsent {
   ({}: ConsentOptions): void;
+}
+
+interface VideoTrackingOptions {
+  isOTracking?: boolean;
+  isGATracking?: boolean;
+  isPermutiveTracking?: boolean;
+  GA_datalayer?: any;
+  GA_milestones?: number[];
+  oTracking_milestones?: number[];
+  route_url?: string;
 }
