@@ -19,20 +19,24 @@ export class FTTracking {
   oTracker: oTracker;
   gaTracker: gaTracker;
   setConfig: any;
+  oEvent: any;
+  gtmEvent: any;
 
   constructor(config: any, options?: TrackingOptions) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     this.oTracker = new oTracker(config, this.options);
     this.gaTracker = new gaTracker(this.options);
 
+    this.oEvent = this.oTracker.eventDispatcher;
+    this.gtmEvent = this.gaTracker.GTMEventDispatcher;
+
     this.setConfig = (config: any) => {
-      //TODO validate config
       validateConfig(config);
       this.config = config;
       this.oTracker.setConfig(config);
     };
     this.setConfig(config);
-    //cookie consent monitor for permutive tracking (should be used for other consents?)
+    //cookie consent monitor for permutive tracking
     window.addEventListener("load", () => {
       new consentMonitor(window.location.hostname, [".app", "preview"]);
     });

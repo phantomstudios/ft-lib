@@ -58,7 +58,7 @@ export class Attention {
         }
         this.hasSentEvent = true;
         this.endAttention();
-        eventDispatcher({
+        window.FTTracker.oEvent({
           category: "page",
           action: "interaction",
           context: {

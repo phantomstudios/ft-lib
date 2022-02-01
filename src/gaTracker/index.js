@@ -4,6 +4,8 @@ const HEADER_SEARCH_ACTION = "Engagement - Search";
 
 export class gaTracker {
   options;
+  GTMEventDispatcher;
+  UAEventDispatcher;
   constructor(options) {
     this.options = options;
     this.setUpFTNavigationLinksTracking();
@@ -11,10 +13,9 @@ export class gaTracker {
     this.setUpFTNavigationSearchTracking(HEADER_CATEGORY, HEADER_SEARCH_ACTION);
     this.setupFooterLinksTracking();
 
-    //RFC - window events for code-fired custom events? (i.e. not data-gadl clicks)
-    window.gtmEvent = (category, action, label) => {
+    this.GTMEventDispatcher = (category, action, label) => {
       validateGTMCustomEvent({ category, action, label });
-      //from channels - replace?
+      //from channels - sets event categories on window on certain pages..replace?
       if (category === "<category>") {
         category = window.gtmCategory;
       }
@@ -26,7 +27,8 @@ export class gaTracker {
       });
     };
 
-    window.uaEvent = (category, action, label) => {
+    //TBC - channels and teamviewer both use GTM custom events
+    this.UAEventDispatcher = (category, action, label) => {
       validateGTMCustomEvent({ category, action, label });
       window.dataLayer.push("event", action, {
         event_category: category,
@@ -51,9 +53,9 @@ export class gaTracker {
       if (typeof window !== "undefined") {
         //TBC - GTM customEvent tag vs standard UA event push?
         if (this.options.isCustomGTMEvent) {
-          window.gtmEvent(category, action, label);
+          this.GTMEventDispatcher(category, action, label);
         } else {
-          window.uaEvent(category, action, label);
+          this.UAEventDispatcher(category, action, label);
         }
       }
     });

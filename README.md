@@ -10,9 +10,11 @@ A collection of Javascript utils for shareable UI and tracking functionality acr
 
 currently implemented:
 
+- FTTracking - Consolidated Origami and GA/GTM event tracking for page and interaction events.
 - consentMonitor - polls the FT consent cookies set by the approved FT Origami cookie banner to enable/disable the FT Permutive ad tracking
 - permutiveVideoUtils - formatted permutive video progress events
-- reactPlayerTracking - Consolidated video tracking (Google Analytics, FT Origami, Permutive) event handlers for FT sites implementing videos with [react-player](https://github.com/cookpete/react-player)
+- reactPlayerTracking - Video tracking for FT sites implementing videos with [react-player](https://github.com/cookpete/react-player)
+- ytIframeEventHandler - Video tracking handler for FT sites with embedded Youtube Iframe API videos.
 
 ## Installation
 
@@ -23,6 +25,35 @@ npm i @phntms/ft-lib
 ```
 
 ## Usage
+
+### FTTracking
+
+Shared Origami and GA/GTM tracking implementation that can be used across all Phantom FT sites. Tracking meta data is provided by a config object when first initiated and on subsequent route changes (only required for SPA/NextJS sites).
+By default, the implementation will automatically handle FT tracking via `data-gadl` and `data-o-event` HTML attributes. The tracker instance can be added to the global window namespace if custom events are required.
+Note: By default the FTTracker instance will load the `consentMonitor` poller, do site's do not need to include this separately.
+
+The FTTracking constructor requires the config JSON object (TODO - schema) and optionally accepts an options object:
+
+#### Default options
+
+```
+  scrollTrackerSelector: "#o_tracker_scroll",
+  isCustomGTMEvent: true,
+
+```
+
+Typical usage:
+
+```Javascript
+import { FTTracking } from '@phntms/ft-lib'
+
+//For Wagtail sites, get server-rendered o-tracking-data
+const config = JSON.parse(document.getElementById('o-tracking-data').textContent)
+window.FTTracker = new FTTracking(config, { scrollTrackerSelector: '#content' })
+.
+.
+window.FTTracker.gtmEvent(`audio player`, '100% progress', window.gtmCategory)
+```
 
 ### consentMonitor
 
@@ -77,7 +108,7 @@ const [videoTracker] = useState(
 >
 ```
 
-### Default Options:
+#### Default Options:
 
 ```
   isPermutiveTracking: false,
