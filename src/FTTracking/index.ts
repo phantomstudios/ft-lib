@@ -14,7 +14,7 @@ const DEFAULT_OPTIONS = {
 };
 
 export class FTTracking {
-  config: any;
+  private _config: any;
   options: TrackingOptions;
   oTracker: oTracker;
   gaTracker: gaTracker;
@@ -29,16 +29,19 @@ export class FTTracking {
 
     this.oEvent = this.oTracker.eventDispatcher;
     this.gtmEvent = this.gaTracker.GTMEventDispatcher;
-
-    this.setConfig = (config: any) => {
-      validateConfig(config);
-      this.config = config;
-      this.oTracker.setConfig(config);
-    };
-    this.setConfig(config);
+    this.config = config;
+    
     //cookie consent monitor for permutive tracking
     window.addEventListener("load", () => {
       new consentMonitor(window.location.hostname, [".app", "preview"]);
     });
+  }
+  set config(c: any){
+    validateConfig(c);
+    this._config = c;
+    this.oTracker.setConfig(c);
+  }
+  get config(){
+    return this._config;
   }
 }
