@@ -5,6 +5,7 @@ import { TrackingOptions } from "../FTTracking";
 import { getValueFromCookie } from "../utils/cookies";
 import getTrace from "../utils/getTrace";
 import { ScrollTracker } from "../utils/scroll";
+import { validateOrigamiEvent } from "../utils/yupValidator";
 
 /* oTracking setup for server-rendered (i.e. Wagtail) sites
 The config object is read from the server-rendered o-tracking-data element
@@ -24,6 +25,7 @@ export class oTracker {
 
     this.eventDispatcher = function (detail: any) {
       if (typeof detail === "object" && detail.category && detail.action) {
+        validateOrigamiEvent(detail);
         detail.app = this.config.app;
         detail.product = this.config.product;
         document.body.dispatchEvent(

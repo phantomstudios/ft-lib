@@ -1,4 +1,12 @@
-import { object, string, boolean, number, date, InferType } from "yup";
+import {
+  object,
+  string,
+  boolean,
+  number,
+  date,
+  InferType,
+  ValidationError,
+} from "yup";
 
 /*
   {
@@ -46,9 +54,87 @@ const configSchema = object({
   isBranded: boolean().defined(),
   contentType: string().defined().default(""),
   campaign: string().defined().default(""),
-  server: string().equals(['https://spoor-api.ft.com/px.gif"']),
+  server: string().equals(["https://spoor-api.ft.com/px.gif"]),
   title: string().defined().default(""),
-  adbook_campaign_id: string().defined().default(""),
+  adbook_campaign_id: string().optional().default(""),
 });
 
-export type configType = InferType<typeof configSchema>;
+const gtmCustomEventSchema = object({
+  category: string()
+    .required()
+    .oneOf([
+      "Internal click",
+      "External click",
+      "Video",
+      "Audio",
+      "CTA",
+      "Scroll",
+    ]),
+  action: string().required(),
+  label: string().required(),
+});
+
+const origamiEventSchema = object({
+  category: string()
+    .required()
+    .oneOf([
+      "page",
+      "video",
+      "audio",
+      "cta",
+      "scroll",
+      "brandedContent",
+      "internal click",
+      "external click",
+    ]),
+  action: string().required(),
+});
+
+export type ConfigType = InferType<typeof configSchema>;
+export type GTMCustomEventType = InferType<typeof gtmCustomEventSchema>;
+export type OrigamiEventType = InferType<typeof origamiEventSchema>;
+
+export const validateConfig = (
+  config: ConfigType
+): ValidationError[] | undefined => {
+  try {
+    configSchema.validateSync(config, { strict: true, abortEarly: false });
+  } catch (err: any) {
+    err.errors.map((err: ValidationError) => {
+      console.warn("FTTracker - config validation error: " + err);
+    });
+  }
+  return undefined;
+};
+
+export const validateGTMCustomEvent = (
+  event: GTMCustomEventType
+): ValidationError[] | undefined => {
+  try {
+    gtmCustomEventSchema.validateSync(event, {
+      strict: true,
+      abortEarly: false,
+    });
+  } catch (err: any) {
+    err.errors.map((err: ValidationError) => {
+      console.warn("FTTracker - GTM custom event validation error: " + err);
+    });
+  }
+  return undefined;
+};
+
+export const validateOrigamiEvent = (
+  config: OrigamiEventType
+): ValidationError[] | undefined => {
+  try {
+    origamiEventSchema.validateSync(config, {
+      strict: true,
+      abortEarly: false,
+    });
+  } catch (err: any) {
+    err.errors.map((err: ValidationError) => {
+      console.warn("FTTracker - Origami event validation error: " + err);
+    });
+  }
+  return undefined;
+};

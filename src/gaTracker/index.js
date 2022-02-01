@@ -1,3 +1,4 @@
+import { validateGTMCustomEvent } from "../utils/yupValidator";
 const HEADER_CATEGORY = "Header";
 const HEADER_SEARCH_ACTION = "Engagement - Search";
 
@@ -12,6 +13,7 @@ export class gaTracker {
 
     //RFC - window events for code-fired custom events? (i.e. not data-gadl clicks)
     window.gtmEvent = (category, action, label) => {
+      validateGTMCustomEvent({ category, action, label });
       //from channels - replace?
       if (category === "<category>") {
         category = window.gtmCategory;
@@ -25,6 +27,7 @@ export class gaTracker {
     };
 
     window.uaEvent = (category, action, label) => {
+      validateGTMCustomEvent({ category, action, label });
       window.dataLayer.push("event", action, {
         event_category: category,
         event_label: label,

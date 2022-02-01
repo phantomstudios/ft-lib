@@ -1,6 +1,7 @@
 import { consentMonitor } from "../consentMonitor";
 import { gaTracker } from "../gaTracker";
 import { oTracker } from "../oTracker";
+import { validateConfig } from "../utils/yupValidator";
 
 export interface TrackingOptions {
   scrollTrackerSelector?: string;
@@ -26,10 +27,11 @@ export class FTTracking {
 
     this.setConfig = (config: any) => {
       //TODO validate config
+      validateConfig(config);
       this.config = config;
       this.oTracker.setConfig(config);
     };
-
+    this.setConfig(config);
     //cookie consent monitor for permutive tracking (should be used for other consents?)
     window.addEventListener("load", () => {
       new consentMonitor(window.location.hostname, [".app", "preview"]);
