@@ -36,8 +36,8 @@ const getSiblingsAndPosition = (el, originalEl, selector) => {
 };
 
 // Get all (sanitised) properties of a given element.
-const getAllElementProperties = (el) => 
- elementPropertiesToCollect.reduce((returnObject, property) => {
+const getAllElementProperties = (el) =>
+  elementPropertiesToCollect.reduce((returnObject, property) => {
     if (el[property]) {
       returnObject[property] = sanitise(el[property]);
     } else if (el.getAttribute(property)) {
@@ -47,7 +47,6 @@ const getAllElementProperties = (el) =>
     }
     return returnObject;
   }, {});
-
 
 // Get some properties of a given element.
 const getDomPathProps = (attrs, props) => {

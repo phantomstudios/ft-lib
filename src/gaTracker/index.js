@@ -5,6 +5,7 @@ const HEADER_SEARCH_ACTION = "Engagement - Search";
 export class gaTracker {
   options;
   GTMEventDispatcher;
+
   UAEventDispatcher;
   constructor(options) {
     this.options = options;

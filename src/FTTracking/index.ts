@@ -30,18 +30,18 @@ export class FTTracking {
     this.oEvent = this.oTracker.eventDispatcher;
     this.gtmEvent = this.gaTracker.GTMEventDispatcher;
     this.config = config;
-    
+
     //cookie consent monitor for permutive tracking
     window.addEventListener("load", () => {
       new consentMonitor(window.location.hostname, [".app", "preview"]);
     });
   }
-  set config(c: any){
+  set config(c: any) {
     validateConfig(c);
     this._config = c;
     this.oTracker.setConfig(c);
   }
-  get config(){
+  get config() {
     return this._config;
   }
 }

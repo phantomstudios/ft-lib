@@ -30,15 +30,15 @@ npm i @phntms/ft-lib
 
 Shared Origami and GA/GTM tracking implementation that can be used across all Phantom FT sites. Tracking meta data is provided by a config object when first initiated and on subsequent route changes (only required for SPA/NextJS sites).
 By default, the implementation will automatically handle FT tracking via `data-gadl` and `data-o-event` HTML attributes. The tracker instance can be added to the global window namespace if custom events are required.
-Note: By default the FTTracker instance will load the `consentMonitor` poller, do site's do not need to include this separately.
+Note: By default the FTTracker instance will load the `consentMonitor` poller, so sites do not need to implement this separately.
 
-The FTTracking constructor requires the config JSON object (TODO - schema) and optionally accepts an options object:
+The constructor requires the config JSON object (TODO - schema) and optionally accepts an options object:
 
 #### Default options
 
 ```
-  scrollTrackerSelector: "#o_tracker_scroll",
-  isCustomGTMEvent: true,
+  scrollTrackerSelector: "#o_tracker_scroll",  //top level DOM element selector for scroll tracking
+  isCustomGTMEvent: true, //selects between GTM and UA event formats
 
 ```
 
