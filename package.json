@@ -1,7 +1,7 @@
 {
   "name": "@phntms/ft-lib",
   "description": "A collection of Javascript UI & tracking utils for FT sites",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "homepage": "https://github.com/phantomstudios/ft-lib#readme",
@@ -59,9 +59,17 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-test-renderer": "^17.0.2",
+    "set-value": ">=4.0.1",
     "ts-jest": "^26.5.6",
-    "typescript": "^4.2.4",
-    "set-value": ">=4.0.1"
+    "typescript": "^4.2.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@financial-times/o-cookie-message": "^5.1.2",
+    "@financial-times/o-footer": "^7.0.12",
+    "@financial-times/o-header": "^8.6.0",
+    "@financial-times/o-tracking": "^4.2.1",
+    "@financial-times/o-utils": "^1.1.7",
+    "@financial-times/o-viewport": "^4.0.5",
+    "yup": "^0.32.11"
+  }
 }

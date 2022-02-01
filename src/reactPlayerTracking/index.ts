@@ -16,7 +16,7 @@ interface Options {
 const DEFAULT_OPTIONS = {
   isPermutiveTracking: false,
   routeUrl: typeof window !== "undefined" ? window.location.href : undefined,
-  category: "video",
+  category: "Video",
   product: "paid-post",
 };
 
