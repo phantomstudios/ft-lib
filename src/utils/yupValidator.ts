@@ -1,12 +1,4 @@
-import {
-  object,
-  string,
-  boolean,
-  number,
-  date,
-  InferType,
-  ValidationError,
-} from "yup";
+import { object, string, boolean, InferType, ValidationError } from "yup";
 
 /*
   {
