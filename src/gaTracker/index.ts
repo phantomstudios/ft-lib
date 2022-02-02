@@ -1,53 +1,45 @@
+import { TrackingOptions } from "../FTTracking";
 import { validateGTMCustomEvent } from "../utils/yupValidator";
 const HEADER_CATEGORY = "Header";
 const HEADER_SEARCH_ACTION = "Engagement - Search";
 
 export class gaTracker {
   options;
-  GTMEventDispatcher;
-
-  UAEventDispatcher;
-  constructor(options) {
+  constructor(options: TrackingOptions) {
     this.options = options;
     this.setUpFTNavigationLinksTracking();
     this.addDataAttributesListener();
     this.setUpFTNavigationSearchTracking(HEADER_CATEGORY, HEADER_SEARCH_ACTION);
     this.setupFooterLinksTracking();
-
-    this.GTMEventDispatcher = (category, action, label) => {
-      validateGTMCustomEvent({ category, action, label });
-      //from channels - sets event categories on window on certain pages..replace?
-      if (category === "<category>") {
-        category = window.gtmCategory;
-      }
-      window.dataLayer.push({
-        event: "customEvent",
-        category,
-        action,
-        label,
-      });
-    };
-
-    //TBC - channels and teamviewer both use GTM custom events
-    this.UAEventDispatcher = (category, action, label) => {
-      validateGTMCustomEvent({ category, action, label });
-      window.dataLayer.push("event", action, {
-        event_category: category,
-        event_label: label,
-      });
-    };
   }
 
-  getPropertiesFromDataAttribute(element) {
-    const gaEventString = element["getAttribute"]("data-gadl");
-    if (!gaEventString) return;
-    return gaEventString.split("|");
+  public GTMEventDispatcher(category: string, action: string, label: string) {
+    validateGTMCustomEvent({ category, action, label });
+    //from channels - sets event categories on window on certain pages..replace?
+    if (category === "<category>" && window.gtmCategory) {
+      category = window.gtmCategory;
+    }
+    window.dataLayer.push({
+      event: "customEvent",
+      category,
+      action,
+      label,
+    });
+  }
+
+  //TBC if needed - channels and teamviewer both use GTM custom events
+  public UAEventDispatcher(category: string, action: string, label: string) {
+    validateGTMCustomEvent({ category, action, label });
+    window.dataLayer.push("event", action, {
+      event_category: category,
+      event_label: label,
+    });
   }
 
   addDataAttributesListener() {
     document.body.addEventListener("click", (evt) => {
-      const elm = evt.target;
-      const gaEventString = elm["getAttribute"]("data-gadl");
+      const elm = evt.target as HTMLElement;
+      const gaEventString = elm.getAttribute("data-gadl");
       if (!gaEventString) return;
       const [category, action, label] = gaEventString.split("|");
       //TODO validate event fields
@@ -67,27 +59,29 @@ export class gaTracker {
       document.querySelectorAll(".o-header__drawer-menu-link")
     );
     if (FTNavigationLinks) {
-      FTNavigationLinks.forEach((navLink) => {
-        const trackingValue = `Header|Engagement - Hamburger|${document.URL} - ${navLink.href}`;
+      FTNavigationLinks.map((navLink) => {
+        const trackingValue = `Header|Engagement - Hamburger|${
+          document.URL
+        } - ${(navLink as HTMLAnchorElement).href}`;
         navLink.setAttribute("data-gadl", trackingValue);
       });
     }
   }
 
-  setUpFTNavigationSearchTracking(category, action) {
+  setUpFTNavigationSearchTracking(category: string, action: string) {
     const searchForm = document.querySelector(".o-header__search-form");
     if (searchForm) {
       searchForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        const searchBarContent = document.querySelector(
-          ".o-header__search-term"
-        ).value;
+        const searchBarContent = (
+          document.querySelector(".o-header__search-term") as HTMLInputElement
+        )?.value;
         if (typeof window !== "undefined") {
           window.dataLayer.push("event", action, {
             event_category: category,
             event_label: searchBarContent,
             event_callback: () => {
-              searchForm.submit();
+              (searchForm as HTMLFormElement).submit();
             },
           });
         }
@@ -101,7 +95,9 @@ export class gaTracker {
     );
     if (FTFooterLinks) {
       FTFooterLinks.forEach((footerLink) => {
-        const trackingValue = `Footer|Click - Footer Nav|${document.URL} - ${footerLink.href}`;
+        const trackingValue = `Footer|Click - Footer Nav|${document.URL} - ${
+          (footerLink as HTMLAnchorElement).href
+        }`;
         footerLink.setAttribute("data-gadl", trackingValue);
       });
     }

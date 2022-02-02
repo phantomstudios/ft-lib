@@ -1,10 +1,14 @@
 import { permutiveVideoUtils } from "../permutiveVideoUtils";
 
-const progressPercentage = (duration, currentTime) =>
-  ((currentTime / duration) * 100).toFixed(2);
+const progressPercentage = (duration: number, currentTime: number) =>
+  parseInt(((currentTime / duration) * 100).toFixed(2));
 const progressMilestones = [1, 25, 50, 75];
 
-const emitProgressEvents = (progress, duration, isYoutube) => {
+const emitProgressEvents = (
+  progress: number,
+  duration: number,
+  isYoutube: boolean
+) => {
   while (progress >= progressMilestones[0]) {
     window.FTTracker.gtmEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
@@ -22,18 +26,18 @@ const emitProgressEvents = (progress, duration, isYoutube) => {
     progressMilestones.shift();
   }
 };
-const campaign = window.gtmCategory.split(" - ")[1];
-const title = window.gtmCategory.split(" - ")[2];
-let permutiveUtils;
-let videoProgressInterval;
+const campaign = window.gtmCategory?.split(" - ")[1] as string;
+const title = window.gtmCategory?.split(" - ")[2] as string;
+let permutiveUtils: permutiveVideoUtils;
+let videoProgressInterval: number;
 
 //Fallback oVideo implemented only on channels - uses shared events so added here for now.
-export const oVideoEventHandler = function (videoEl) {
+export const oVideoEventHandler = function (videoEl: HTMLVideoElement) {
   window.isOvideoPlayer = true;
   permutiveUtils = new permutiveVideoUtils(
     campaign,
     title,
-    videoEl.getAttribute("src")
+    videoEl.getAttribute("src") as string
   );
   videoEl.addEventListener("play", () => {
     playTracking(videoEl.currentTime, videoEl.duration);
@@ -52,12 +56,13 @@ export const oVideoEventHandler = function (videoEl) {
   });
 };
 
-export const ytIframeEventHandler = function (event) {
-  const player = event.target;
+export const ytIframeEventHandler = function (event: YT.PlayerEvent) {
+  const player = event.target as YT.Player;
   permutiveUtils = new permutiveVideoUtils(
     campaign,
     title,
-    player.playerInfo.videoUrl
+    player.getVideoUrl() //TODO test
+    //player.playerInfo.videoUrl
   );
 
   switch (event.data) {
@@ -78,7 +83,7 @@ export const ytIframeEventHandler = function (event) {
   }
 };
 /*** shared videojs and origami player tracking  ***/
-const ytPlayTracking = function (player) {
+const ytPlayTracking = function (player: YT.Player) {
   videoProgressInterval = window.setInterval(() => {
     const currentTime = player.getCurrentTime();
     const duration = player.getDuration();
@@ -104,7 +109,7 @@ const ytPlayTracking = function (player) {
 };
 
 /*** shared videojs and origami player tracking  ***/
-const playTracking = function (currentTime, duration) {
+const playTracking = function (currentTime: number, duration: number) {
   videoProgressInterval = window.setInterval(() => {
     permutiveUtils.emitPermutiveProgressEvent(
       duration - 1,
@@ -121,7 +126,7 @@ const playTracking = function (currentTime, duration) {
   });
 };
 
-const progressTracking = function (currentTime, duration) {
+const progressTracking = function (currentTime: number, duration: number) {
   const progress = progressPercentage(duration, currentTime);
   emitProgressEvents(progress, duration, false);
   window.FTTracker.oEvent({
@@ -132,7 +137,7 @@ const progressTracking = function (currentTime, duration) {
   });
 };
 
-const seekedTracking = function (currentTime, duration) {
+const seekedTracking = function (currentTime: number, duration: number) {
   const progress = progressPercentage(duration, currentTime);
   emitProgressEvents(progress, duration, false);
   window.FTTracker.oEvent({
@@ -143,7 +148,7 @@ const seekedTracking = function (currentTime, duration) {
   });
 };
 
-const pausedTracking = function (currentTime, duration) {
+const pausedTracking = function (currentTime: number, duration: number) {
   const progress = progressPercentage(duration, currentTime);
   window.FTTracker.oEvent({
     category: "video",
@@ -153,7 +158,7 @@ const pausedTracking = function (currentTime, duration) {
   });
 };
 
-const endedTracking = function (currentTime, duration) {
+const endedTracking = function (currentTime: number, duration: number) {
   const progress = progressPercentage(duration, currentTime);
   window.FTTracker.gtmEvent(
     `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
@@ -167,7 +172,7 @@ const endedTracking = function (currentTime, duration) {
     progress,
   });
   //force a 100% event on end
-  if (permutiveUtils.progressPermutiveMilestones > 0) {
+  if (permutiveUtils.remainingProgress.length > 0) {
     permutiveUtils.emitPermutiveProgressEvent(
       currentTime,
       currentTime,

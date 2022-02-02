@@ -5,45 +5,29 @@ import { TrackingOptions } from "../FTTracking";
 import { getValueFromCookie } from "../utils/cookies";
 import getTrace from "../utils/getTrace";
 import { ScrollTracker } from "../utils/scroll";
-import { validateOrigamiEvent } from "../utils/yupValidator";
+import {
+  validateOrigamiEvent,
+  ConfigType,
+  OrigamiEventType,
+} from "../utils/yupValidator";
 
 /* oTracking setup for server-rendered (i.e. Wagtail) sites
 The config object is read from the server-rendered o-tracking-data element
 */
 export class oTracker {
-  config: any;
-  setConfig: any;
+  private _config: ConfigType;
   options: TrackingOptions;
-  eventDispatcher: any;
 
-  constructor(config: any, options: TrackingOptions) {
-    this.setConfig = function (config: any) {
-      //TODO validate config
-      this.config = config;
-      this.config.source_id = oTracking.getRootID();
-    };
-
-    this.eventDispatcher = function (detail: any) {
-      if (typeof detail === "object" && detail.category && detail.action) {
-        validateOrigamiEvent(detail);
-        detail.app = this.config.app;
-        detail.product = this.config.product;
-        document.body.dispatchEvent(
-          new CustomEvent("oTracking.event", { detail, bubbles: true })
-        );
-      } else {
-        throw "Invalid event type";
-      }
-    };
-
+  constructor(config: ConfigType, options: TrackingOptions) {
+    this._config = config;
+    this._config.source_id = oTracking.getRootID();
     this.options = options;
-    this.setConfig(config);
 
     //init config data
     const configData = {
       server: "https://spoor-api.ft.com/px.gif",
       context: {
-        ...this.config,
+        ...this._config,
       },
       user: {
         ft_session: getValueFromCookie(/FTSession=([^;]+)/),
@@ -63,10 +47,30 @@ export class oTracker {
     this.broadcastBrandedContent();
   }
 
+  set config(c: ConfigType) {
+    this._config = c;
+  }
+  get config() {
+    return this._config;
+  }
+
+  public eventDispatcher(detail: OrigamiEventType): void {
+    if (typeof detail === "object" && detail.category && detail.action) {
+      validateOrigamiEvent(detail);
+      detail.app = this._config.app;
+      detail.product = this._config.product;
+      document.body.dispatchEvent(
+        new CustomEvent("oTracking.event", { detail, bubbles: true })
+      );
+    } else {
+      throw "Invalid event type";
+    }
+  }
+
   broadcastPageView() {
     oTracking.page({
-      app: this.config.app,
-      product: this.config.product,
+      app: this._config.app,
+      product: this._config.product,
       title: document.title,
     });
   }
@@ -75,7 +79,7 @@ export class oTracker {
     document.body.dispatchEvent(
       new CustomEvent("oTracking.event", {
         detail: {
-          ...this.config,
+          ...this._config,
           action: "view",
           category: "brandedContent",
         },
@@ -112,7 +116,7 @@ export class oTracker {
           detail.domPathTokens = trace;
         }
 
-        this.eventDispatcher(detail);
+        this.eventDispatcher(detail as OrigamiEventType);
       }
     });
   }

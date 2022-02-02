@@ -49,6 +49,7 @@ const configSchema = object({
   server: string().equals(["https://spoor-api.ft.com/px.gif"]),
   title: string().defined().default(""),
   adbook_campaign_id: string().optional().default(""),
+  source_id: string().optional(),
 });
 
 const gtmCustomEventSchema = object({
@@ -80,6 +81,8 @@ const origamiEventSchema = object({
       "external click",
     ]),
   action: string().required(),
+  app: string().optional(),
+  product: string().optional(),
 });
 
 export type ConfigType = InferType<typeof configSchema>;

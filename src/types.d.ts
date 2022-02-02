@@ -5,6 +5,8 @@ interface Window {
     consent: CallableConsent;
     track: any;
   };
+  gtmCategory?: string; //channels only
+  isOvideoPlayer?: boolean; //channels only
 }
 
 interface ConsentOptions {

@@ -71,6 +71,7 @@
     "@financial-times/o-tracking": "^4.2.1",
     "@financial-times/o-utils": "^1.1.7",
     "@financial-times/o-viewport": "^4.0.5",
+    "@types/youtube": "^0.0.46",
     "yup": "^0.32.11"
   }
 }
