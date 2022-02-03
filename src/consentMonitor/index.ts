@@ -45,7 +45,7 @@ export class consentMonitor {
 
   init = () => {
     this.cookieConsentTest();
-    global.setInterval(this.cookieConsentTest, 3000);
+    setInterval(this.cookieConsentTest, 3000);
 
     //Simulate cookie consent behaviour in non-prod environments
     this._devHosts.map(

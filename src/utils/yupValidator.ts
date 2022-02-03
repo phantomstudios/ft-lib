@@ -1,4 +1,11 @@
-import { object, string, boolean, InferType, ValidationError } from "yup";
+import {
+  object,
+  string,
+  number,
+  boolean,
+  InferType,
+  ValidationError,
+} from "yup";
 
 /*
   {
@@ -62,6 +69,7 @@ const gtmCustomEventSchema = object({
       "Audio",
       "CTA",
       "Scroll",
+      "Share",
     ]),
   action: string().required(),
   label: string().required(),
@@ -81,8 +89,22 @@ const origamiEventSchema = object({
       "external click",
     ]),
   action: string().required(),
-  app: string().optional(),
-  product: string().optional(),
+  app: string().nullable().notRequired(),
+  product: string().nullable().notRequired(),
+  duration: number()
+    .nullable()
+    .notRequired()
+    .when("category", {
+      is: "video" || "audio",
+      then: string().required(),
+    }),
+  progress: number()
+    .nullable()
+    .notRequired()
+    .when("category", {
+      is: "video" || "audio",
+      then: string().required(),
+    }),
 });
 
 export type ConfigType = InferType<typeof configSchema>;
@@ -95,8 +117,8 @@ export const validateConfig = (
   try {
     configSchema.validateSync(config, { strict: true, abortEarly: false });
   } catch (err: any) {
-    err.errors.map((err: ValidationError) => {
-      console.warn("FTTracker - config validation error: " + err);
+    err.errors?.map((err: ValidationError) => {
+      console.error("FTTracker - config validation error: " + err);
     });
   }
   return undefined;
@@ -111,8 +133,8 @@ export const validateGTMCustomEvent = (
       abortEarly: false,
     });
   } catch (err: any) {
-    err.errors.map((err: ValidationError) => {
-      console.warn("FTTracker - GTM custom event validation error: " + err);
+    err.errors?.map((err: ValidationError) => {
+      console.error("FTTracker - GTM custom event validation error: " + err);
     });
   }
   return undefined;
@@ -127,8 +149,8 @@ export const validateOrigamiEvent = (
       abortEarly: false,
     });
   } catch (err: any) {
-    err.errors.map((err: ValidationError) => {
-      console.warn("FTTracker - Origami event validation error: " + err);
+    err.errors?.map((err: ValidationError) => {
+      console.error("FTTracker - Origami event validation error: " + err);
     });
   }
   return undefined;

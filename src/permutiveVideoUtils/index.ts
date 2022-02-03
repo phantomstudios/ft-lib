@@ -4,12 +4,19 @@ export class permutiveVideoUtils {
   protected progressPermutiveMilestones: number[] = [0, 0.25, 0.5, 0.75, 1];
   protected _campaign: string;
   protected _title: string;
-  protected _videoId: string;
+  protected _videoId;
 
-  constructor(campaign: string, title: string, videoId: string) {
+  constructor(campaign: string, title: string, videoId = "") {
     this._campaign = campaign;
     this._title = title;
     this._videoId = videoId;
+  }
+
+  set videoId(vid: string) {
+    this._videoId = vid;
+  }
+  get videoId() {
+    return this._videoId;
   }
 
   get remainingProgress(): number[] {

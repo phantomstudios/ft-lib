@@ -1,182 +1,191 @@
+import { FTTracking } from "../FTTracking";
 import { permutiveVideoUtils } from "../permutiveVideoUtils";
+import { OrigamiEventType } from "../utils/yupValidator";
 
-const progressPercentage = (duration: number, currentTime: number) =>
-  parseInt(((currentTime / duration) * 100).toFixed(2));
-const progressMilestones = [1, 25, 50, 75];
+export class ytIframeTracking {
+  FTTracker: FTTracking;
+  progressMilestones = [1, 25, 50, 75];
+  permutiveUtils: permutiveVideoUtils;
+  videoProgressInterval = 0;
 
-const emitProgressEvents = (
-  progress: number,
-  duration: number,
-  isYoutube: boolean
-) => {
-  while (progress >= progressMilestones[0]) {
-    window.FTTracker.gtmEvent(
-      `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
-      `${progressMilestones[0]}% watched`,
-      `${window.gtmCategory} - Progress`
+  constructor(FTTracker: FTTracking) {
+    this.FTTracker = FTTracker;
+    this.permutiveUtils = new permutiveVideoUtils(
+      this.FTTracker.config.campaign,
+      this.FTTracker.config.campaign
     );
-    if (isYoutube) {
-      window.FTTracker.oEvent({
-        category: "video",
-        action: "progress",
-        duration: duration,
-        progress,
-      });
+  }
+
+  progressPercentage = (duration: number, currentTime: number) =>
+    parseInt(((currentTime / duration) * 100).toFixed(2));
+
+  emitProgressEvents = (
+    progress: number,
+    duration: number,
+    isYoutube: boolean
+  ) => {
+    while (progress >= this.progressMilestones[0]) {
+      this.FTTracker.gtmEvent(
+        `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
+        `${this.progressMilestones[0]}% watched`,
+        `${window.gtmCategory} - Progress`
+      );
+      if (isYoutube) {
+        this.FTTracker.oEvent({
+          category: "video",
+          action: "progress",
+          duration: duration,
+          progress,
+        } as OrigamiEventType);
+      }
+      this.progressMilestones.shift();
     }
-    progressMilestones.shift();
+  };
+
+  //Fallback oVideo implemented only on channels - uses shared events so added here for now.
+  public oVideoEventHandler(videoEl: HTMLVideoElement) {
+    window.isOvideoPlayer = true;
+    this.permutiveUtils.videoId = videoEl.getAttribute("src") as string;
+    videoEl.addEventListener("play", () => {
+      this.playTracking(videoEl.currentTime, videoEl.duration);
+    });
+    videoEl.addEventListener("progress", () => {
+      this.progressTracking(videoEl.currentTime, videoEl.duration);
+    });
+    videoEl.addEventListener("seeked", () => {
+      this.seekedTracking(videoEl.currentTime, videoEl.duration);
+    });
+    videoEl.addEventListener("pause", () => {
+      this.pausedTracking(videoEl.currentTime, videoEl.duration);
+    });
+    videoEl.addEventListener("ended", () => {
+      this.endedTracking(videoEl.currentTime, videoEl.duration);
+    });
   }
-};
-const campaign = window.gtmCategory?.split(" - ")[1] as string;
-const title = window.gtmCategory?.split(" - ")[2] as string;
-let permutiveUtils: permutiveVideoUtils;
-let videoProgressInterval: number;
 
-//Fallback oVideo implemented only on channels - uses shared events so added here for now.
-export const oVideoEventHandler = function (videoEl: HTMLVideoElement) {
-  window.isOvideoPlayer = true;
-  permutiveUtils = new permutiveVideoUtils(
-    campaign,
-    title,
-    videoEl.getAttribute("src") as string
-  );
-  videoEl.addEventListener("play", () => {
-    playTracking(videoEl.currentTime, videoEl.duration);
-  });
-  videoEl.addEventListener("progress", () => {
-    progressTracking(videoEl.currentTime, videoEl.duration);
-  });
-  videoEl.addEventListener("seeked", () => {
-    seekedTracking(videoEl.currentTime, videoEl.duration);
-  });
-  videoEl.addEventListener("pause", () => {
-    pausedTracking(videoEl.currentTime, videoEl.duration);
-  });
-  videoEl.addEventListener("ended", () => {
-    endedTracking(videoEl.currentTime, videoEl.duration);
-  });
-};
-
-export const ytIframeEventHandler = function (event: YT.PlayerEvent) {
-  const player = event.target as YT.Player;
-  permutiveUtils = new permutiveVideoUtils(
-    campaign,
-    title,
-    player.getVideoUrl() //TODO test
+  public ytIframeEventHandler(event: YT.PlayerEvent) {
+    const player = event.target as YT.Player;
+    this.permutiveUtils.videoId = player.getVideoUrl(); //TODO test
     //player.playerInfo.videoUrl
-  );
 
-  switch (event.data) {
-    case 0:
-      endedTracking(player.getCurrentTime(), player.getDuration());
-      break;
-    case 1:
-      ytPlayTracking(player);
-      break;
-    case 2:
-      setTimeout(function () {
-        if (player.getPlayerState() == 2) {
-          pausedTracking(player.getCurrentTime(), player.getDuration());
-        }
-      }, 1000);
+    switch (player.getPlayerState()) {
+      case YT.PlayerState.ENDED:
+        this.endedTracking(player.getCurrentTime(), player.getDuration());
+        break;
+      case YT.PlayerState.PLAYING:
+        this.ytPlayTracking(player);
+        break;
+      case YT.PlayerState.PAUSED:
+        //test if still pause after 1 second, otherwise its a seek
+        setTimeout(() => {
+          if (player.getPlayerState() == YT.PlayerState.PAUSED) {
+            this.pausedTracking(player.getCurrentTime(), player.getDuration());
+          }
+        }, 1000);
 
-      break;
+        break;
+    }
   }
-};
-/*** shared videojs and origami player tracking  ***/
-const ytPlayTracking = function (player: YT.Player) {
-  videoProgressInterval = window.setInterval(() => {
+
+  ytPlayTracking(player: YT.Player) {
+    this.videoProgressInterval = window.setInterval(() => {
+      const currentTime = player.getCurrentTime();
+      const duration = player.getDuration();
+      this.permutiveUtils.emitPermutiveProgressEvent(
+        duration - 1,
+        currentTime,
+        this.videoProgressInterval
+      );
+      const progress = this.progressPercentage(duration, currentTime);
+      this.emitProgressEvents(progress, duration, true);
+    }, 1000);
     const currentTime = player.getCurrentTime();
     const duration = player.getDuration();
-    permutiveUtils.emitPermutiveProgressEvent(
-      duration - 1,
-      currentTime,
-      videoProgressInterval
+    const progress = this.progressPercentage(duration, currentTime);
+    if (progress < 1) {
+      this.FTTracker.oEvent({
+        category: "video",
+        action: "playing",
+        duration: duration,
+        progress,
+      } as OrigamiEventType);
+    }
+  }
+
+  pausedTracking(currentTime: number, duration: number) {
+    const progress = this.progressPercentage(duration, currentTime);
+    this.FTTracker.oEvent({
+      category: "video",
+      action: "pause",
+      duration: duration,
+      progress,
+    } as OrigamiEventType);
+  }
+
+  endedTracking(currentTime: number, duration: number) {
+    const progress = this.progressPercentage(duration, currentTime);
+    this.FTTracker.gtmEvent(
+      `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
+      `100% watched`,
+      `${window.gtmCategory} - Progress`
     );
-    const progress = progressPercentage(duration, currentTime);
-    emitProgressEvents(progress, duration, true);
-  }, 1000);
-  const currentTime = player.getCurrentTime();
-  const duration = player.getDuration();
-  const progress = progressPercentage(duration, currentTime);
-  if (progress < 1) {
-    window.FTTracker.oEvent({
+    this.FTTracker.oEvent({
+      category: "video",
+      action: "ended",
+      duration: duration,
+      progress,
+    } as OrigamiEventType);
+    //force a 100% event on end
+    if (this.permutiveUtils.remainingProgress.length > 0) {
+      this.permutiveUtils.emitPermutiveProgressEvent(
+        currentTime,
+        currentTime,
+        this.videoProgressInterval
+      );
+    }
+  }
+
+  /*** Below events only used for FT-Channels videoJS and Origami players - remove if no longer needed ***/
+
+  /*** videojs and origami player event only  ***/
+  playTracking(currentTime: number, duration: number) {
+    this.videoProgressInterval = window.setInterval(() => {
+      this.permutiveUtils.emitPermutiveProgressEvent(
+        duration - 1,
+        currentTime,
+        this.videoProgressInterval
+      );
+    }, 1000);
+    const progress = this.progressPercentage(duration, currentTime);
+    this.FTTracker.oEvent({
       category: "video",
       action: "playing",
       duration: duration,
       progress,
-    });
+    } as OrigamiEventType);
   }
-};
 
-/*** shared videojs and origami player tracking  ***/
-const playTracking = function (currentTime: number, duration: number) {
-  videoProgressInterval = window.setInterval(() => {
-    permutiveUtils.emitPermutiveProgressEvent(
-      duration - 1,
-      currentTime,
-      videoProgressInterval
-    );
-  }, 1000);
-  const progress = progressPercentage(duration, currentTime);
-  window.FTTracker.oEvent({
-    category: "video",
-    action: "playing",
-    duration: duration,
-    progress,
-  });
-};
-
-const progressTracking = function (currentTime: number, duration: number) {
-  const progress = progressPercentage(duration, currentTime);
-  emitProgressEvents(progress, duration, false);
-  window.FTTracker.oEvent({
-    category: "video",
-    action: "progress",
-    duration: duration,
-    progress,
-  });
-};
-
-const seekedTracking = function (currentTime: number, duration: number) {
-  const progress = progressPercentage(duration, currentTime);
-  emitProgressEvents(progress, duration, false);
-  window.FTTracker.oEvent({
-    category: "video",
-    action: "seek",
-    duration: duration,
-    progress,
-  });
-};
-
-const pausedTracking = function (currentTime: number, duration: number) {
-  const progress = progressPercentage(duration, currentTime);
-  window.FTTracker.oEvent({
-    category: "video",
-    action: "pause",
-    duration: duration,
-    progress,
-  });
-};
-
-const endedTracking = function (currentTime: number, duration: number) {
-  const progress = progressPercentage(duration, currentTime);
-  window.FTTracker.gtmEvent(
-    `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
-    `100% watched`,
-    `${window.gtmCategory} - Progress`
-  );
-  window.FTTracker.oEvent({
-    category: "video",
-    action: "ended",
-    duration: duration,
-    progress,
-  });
-  //force a 100% event on end
-  if (permutiveUtils.remainingProgress.length > 0) {
-    permutiveUtils.emitPermutiveProgressEvent(
-      currentTime,
-      currentTime,
-      videoProgressInterval
-    );
+  /*** videojs and origami player event only  ***/
+  progressTracking(currentTime: number, duration: number) {
+    const progress = this.progressPercentage(duration, currentTime);
+    this.emitProgressEvents(progress, duration, false);
+    this.FTTracker.oEvent({
+      category: "video",
+      action: "progress",
+      duration: duration,
+      progress,
+    } as OrigamiEventType);
   }
-};
+
+  /*** videojs and origami player event only  ***/
+  seekedTracking(currentTime: number, duration: number) {
+    const progress = this.progressPercentage(duration, currentTime);
+    this.emitProgressEvents(progress, duration, false);
+    this.FTTracker.oEvent({
+      category: "video",
+      action: "seek",
+      duration: duration,
+      progress,
+    } as OrigamiEventType);
+  }
+}

@@ -1,5 +1,7 @@
 import * as oViewport from "@financial-times/o-viewport";
 
+import { FTTracking } from "../FTTracking";
+
 const ATTENTION_INTERVAL = 15000;
 const ATTENTION_EVENTS = [
   "load",
@@ -20,9 +22,10 @@ export class Attention {
   startAttentionTime;
   endAttentionTime;
   hasSentEvent = false;
+  FTTracker;
 
-  constructor(config) {
-    this.config = config;
+  constructor(FTTracker) {
+    this.FTTracker = FTTracker;
     this.init();
   }
 
@@ -58,7 +61,7 @@ export class Attention {
         }
         this.hasSentEvent = true;
         this.endAttention();
-        window.FTTracker.oEvent({
+        this.FTTracker.oEvent({
           category: "page",
           action: "interaction",
           context: {

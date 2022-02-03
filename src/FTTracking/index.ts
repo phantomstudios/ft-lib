@@ -5,7 +5,6 @@ import {
   validateConfig,
   ConfigType,
   OrigamiEventType,
-  GTMCustomEventType,
 } from "../utils/yupValidator";
 
 export interface TrackingOptions {

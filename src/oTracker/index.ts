@@ -57,8 +57,8 @@ export class oTracker {
   public eventDispatcher(detail: OrigamiEventType): void {
     if (typeof detail === "object" && detail.category && detail.action) {
       validateOrigamiEvent(detail);
-      detail.app = this._config.app;
-      detail.product = this._config.product;
+      detail.app = this.config.app;
+      detail.product = this.config.product;
       document.body.dispatchEvent(
         new CustomEvent("oTracking.event", { detail, bubbles: true })
       );
@@ -69,8 +69,8 @@ export class oTracker {
 
   broadcastPageView() {
     oTracking.page({
-      app: this._config.app,
-      product: this._config.product,
+      app: this.config.app,
+      product: this.config.product,
       title: document.title,
     });
   }
@@ -79,7 +79,7 @@ export class oTracker {
     document.body.dispatchEvent(
       new CustomEvent("oTracking.event", {
         detail: {
-          ...this._config,
+          ...this.config,
           action: "view",
           category: "brandedContent",
         },
