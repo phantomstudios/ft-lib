@@ -1,7 +1,5 @@
 import * as oViewport from "@financial-times/o-viewport";
 
-import { FTTracking } from "../FTTracking";
-
 const ATTENTION_INTERVAL = 15000;
 const ATTENTION_EVENTS = [
   "load",
