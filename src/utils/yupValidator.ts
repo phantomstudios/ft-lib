@@ -3,6 +3,7 @@ import {
   string,
   number,
   boolean,
+  mixed,
   InferType,
   ValidationError,
 } from "yup";
@@ -67,7 +68,6 @@ const gtmCustomEventSchema = object({
       "External click",
       "Video",
       "Audio",
-      "CTA",
       "Scroll",
       "Share",
       "Form",
@@ -94,6 +94,8 @@ const origamiEventSchema = object({
   action: string().required(),
   app: string().nullable().notRequired(),
   product: string().nullable().notRequired(),
+  source: string().nullable().notRequired(),
+  meta: mixed().nullable().notRequired(),
   duration: number()
     .nullable()
     .notRequired()

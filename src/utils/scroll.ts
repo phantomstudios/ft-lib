@@ -1,12 +1,20 @@
+import { TrackingOptions } from "../FTTracking";
+import { oTracker } from "../oTracker";
 import { Attention } from "./attention";
 import "./intersectionObserverPolyfill";
+import { ConfigType, OrigamiEventType } from "./yupValidator";
 
 export class ScrollTracker {
-  constructor(oTracker) {
-    this.config = oTracker.config;
+  oTracker: oTracker;
+  options: TrackingOptions;
+  attention: any;
+  config: ConfigType;
+  constructor(oTracker: oTracker) {
+    this.oTracker = oTracker;
     this.options = oTracker.options;
-    this.eventDispatcher = oTracker.eventDispatcher;
-    this.attention = new Attention(this.config);
+    this.config = oTracker.config;
+
+    this.attention = new Attention(this.oTracker);
     this.scrollDepthInit([25, 50, 75, 100], this.options.scrollTrackerSelector);
   }
 
@@ -14,15 +22,15 @@ export class ScrollTracker {
     document.querySelectorAll("[data-percentage]").forEach((element) => {
       element.remove();
     });
-    this.attention = new Attention(this.config);
+    this.attention = new Attention(this.oTracker);
     this.scrollDepthInit([25, 50, 75, 100], this.options.scrollTrackerSelector);
   }
 
-  scrollDepthInit(percentages, selector) {
+  scrollDepthInit(percentages: number[], selector = "") {
     const element = document.querySelector(selector);
     if (element && window.IntersectionObserver) {
       const observer = new IntersectionObserver((changes) => {
-        this.intersectionCallback(this, changes);
+        this.intersectionCallback(observer, changes);
       });
 
       percentages.forEach((percentage) => {
@@ -34,14 +42,17 @@ export class ScrollTracker {
         targetEl.style.bottom = "0";
         targetEl.style.width = "100%";
         targetEl.style.zIndex = "-1";
-        targetEl.setAttribute("data-percentage", percentage);
+        targetEl.setAttribute("data-percentage", percentage.toString());
         element.appendChild(targetEl);
         observer.observe(targetEl);
       });
     }
   }
 
-  intersectionCallback(observer, changes) {
+  intersectionCallback(
+    observer: IntersectionObserver,
+    changes: IntersectionObserverEntry[]
+  ) {
     changes.forEach((change) => {
       if (change.isIntersecting || change.intersectionRatio > 0) {
         const scrollDepthMarkerEl = change.target;
@@ -52,14 +63,13 @@ export class ScrollTracker {
           category: "page",
           meta: {
             percentagesViewed,
-            attention: this.attention.get(),
           },
           product: this.config.product,
           source: this.config.product,
           app: this.config.app,
         };
 
-        this.eventDispatcher(data);
+        this.oTracker.eventDispatcher(data as OrigamiEventType);
 
         if (scrollDepthMarkerEl.parentNode) {
           scrollDepthMarkerEl.parentNode.removeChild(scrollDepthMarkerEl);

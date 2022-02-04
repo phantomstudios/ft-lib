@@ -20,10 +20,10 @@ export class Attention {
   startAttentionTime;
   endAttentionTime;
   hasSentEvent = false;
-  FTTracker;
+  oTracker;
 
-  constructor(FTTracker) {
-    this.FTTracker = FTTracker;
+  constructor(oTracker) {
+    this.oTracker = oTracker;
     this.init();
   }
 
@@ -59,7 +59,7 @@ export class Attention {
         }
         this.hasSentEvent = true;
         this.endAttention();
-        this.FTTracker.oEvent({
+        this.oTracker.eventDispatcher({
           category: "page",
           action: "interaction",
           context: {
