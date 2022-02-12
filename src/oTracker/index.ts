@@ -17,6 +17,7 @@ The config object is read from the server-rendered o-tracking-data element
 export class oTracker {
   private _config: ConfigType;
   options: TrackingOptions;
+  scrollTracker: ScrollTracker;
 
   constructor(config: ConfigType, options: TrackingOptions) {
     this._config = config;
@@ -37,7 +38,7 @@ export class oTracker {
 
     //setup listeners
     this.OTrackingHandler();
-    new ScrollTracker(this);
+    this.scrollTracker = new ScrollTracker(this);
 
     //send Origami DomLoaded event
     document.dispatchEvent(new CustomEvent("o.DOMContentLoaded"));
@@ -54,7 +55,7 @@ export class oTracker {
     return this._config;
   }
 
-  public eventDispatcher(detail: OrigamiEventType): void {
+  public eventDispatcher(detail: OrigamiEventType) {
     if (typeof detail === "object" && detail.category && detail.action) {
       validateOrigamiEvent(detail);
       detail.app = this.config.app;
@@ -67,7 +68,7 @@ export class oTracker {
     }
   }
 
-  broadcastPageView() {
+  public broadcastPageView() {
     oTracking.page({
       app: this.config.app,
       product: this.config.product,
@@ -75,7 +76,7 @@ export class oTracker {
     });
   }
 
-  broadcastBrandedContent() {
+  public broadcastBrandedContent() {
     document.body.dispatchEvent(
       new CustomEvent("oTracking.event", {
         detail: {

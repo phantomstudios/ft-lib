@@ -47,4 +47,13 @@ export class FTTracking {
   get config() {
     return this._config;
   }
+
+  public newPageView(config: ConfigType) {
+    //Update passed config to otracker,send pageview events and reset scrollTracker
+    this.oTracker.config = config;
+    this.oTracker.broadcastPageView();
+    this.oTracker.broadcastBrandedContent();
+    this.oTracker.scrollTracker.reset();
+    //ga pageview event required for sites without GTM?
+  }
 }
