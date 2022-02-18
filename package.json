@@ -41,6 +41,7 @@
     "@types/debug": "^4.1.7",
     "@types/jest": "^26.0.23",
     "@types/react": "^17.0.6",
+    "@types/youtube": "^0.0.46",
     "@types/yup": "^0.29.13",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
@@ -65,13 +66,15 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "yup": "^0.32.11"
+  },
+  "peerDependencies": {
     "@financial-times/o-cookie-message": "^5.1.2",
     "@financial-times/o-footer": "^7.0.12",
     "@financial-times/o-header": "^8.6.0",
-    "@financial-times/o-tracking": "^4.2.1",
+    "@financial-times/o-tracking": "^3.1.4",
     "@financial-times/o-utils": "^1.1.7",
     "@financial-times/o-viewport": "^4.0.5",
-    "@types/youtube": "^0.0.46",
-    "yup": "^0.32.11"
+    "ftdomdelegate": "4.0.6"
   }
 }
