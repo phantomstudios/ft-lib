@@ -1,5 +1,6 @@
 interface Window {
   dataLayer: any;
+  googletag: any;
   permutive: {
     addon: any;
     consent: CallableConsent;

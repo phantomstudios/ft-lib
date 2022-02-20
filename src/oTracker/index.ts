@@ -41,8 +41,7 @@ export class oTracker {
     this.scrollTracker = new ScrollTracker(this);
 
     //send Origami DomLoaded event
-    document.dispatchEvent(new CustomEvent("o.DOMContentLoaded"));
-
+    //document.dispatchEvent(new CustomEvent("o.DOMContentLoaded"));  //TODO this isnt needed on next and breaks the cookie-message eventhandlers - is it needed for the server sites?
     //send page hits
     this.broadcastPageView();
     this.broadcastBrandedContent();

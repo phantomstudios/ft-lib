@@ -18,7 +18,7 @@ export class reactPlayerTracking {
   videoUrl: string;
 
   /** 100% is fired with ended event */
-  GA_milestones: number[] = [1, 25, 50];
+  GA_milestones: number[] = [1, 25, 50, 75];
   oTracking_milestones: number[] = [25, 50, 75];
   FTTracker: FTTracking;
   permutiveTracker: permutiveVideoUtils | undefined;

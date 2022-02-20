@@ -27,10 +27,10 @@ export class gaTracker {
     });
   }
 
-  //TBC if needed - channels and teamviewer both use GTM custom events
+  //Standardise GTAG script vs UA/GTM?
   public UAEventDispatcher(category: string, action: string, label: string) {
     validateGTMCustomEvent({ category, action, label });
-    window.dataLayer.push("event", action, {
+    window.googletag("event", action, {
       event_category: category,
       event_label: label,
     });
@@ -38,8 +38,9 @@ export class gaTracker {
 
   addDataAttributesListener() {
     document.body.addEventListener("click", (evt) => {
-      const elm = evt.target as HTMLElement;
-      const gaEventString = elm.getAttribute("data-gadl");
+      //get nearest a tag with data-gadl attribute
+      const elm = (evt.target as HTMLElement).closest("a[data-gadl]");
+      const gaEventString = elm?.getAttribute("data-gadl");
       if (!gaEventString) return;
       const [category, action, label] = gaEventString.split("|");
       //TODO validate event fields
