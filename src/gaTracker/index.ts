@@ -27,10 +27,10 @@ export class gaTracker {
     });
   }
 
-  //Standardise GTAG script vs UA/GTM?
-  public UAEventDispatcher(category: string, action: string, label: string) {
+  //
+  public GtagEventDispatcher(category: string, action: string, label: string) {
     validateGTMCustomEvent({ category, action, label });
-    window.googletag("event", action, {
+    window.gtag("event", action, {
       event_category: category,
       event_label: label,
     });
@@ -49,7 +49,7 @@ export class gaTracker {
         if (this.options.isCustomGTMEvent) {
           this.GTMEventDispatcher(category, action, label);
         } else {
-          this.UAEventDispatcher(category, action, label);
+          this.GtagEventDispatcher(category, action, label);
         }
       }
     });
