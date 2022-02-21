@@ -1,3 +1,6 @@
+declare module "@financial-times/o-tracking";
+declare module "@financial-times/o-viewport";
+
 interface Window {
   dataLayer: any;
   gtag: any;

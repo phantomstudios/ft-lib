@@ -1,4 +1,3 @@
-// @ts-ignore
 import oTracking from "@financial-times/o-tracking";
 
 import { TrackingOptions } from "../FTTracking";
