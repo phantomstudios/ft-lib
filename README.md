@@ -94,9 +94,7 @@ Typical implementation:
 import { reactPlayerTracking } from "@phntms/ft-lib";
 
 const [videoTracker] = useState(
-   new reactPlayerTracking(eventDispatcher, <VIDEO-TITLE>, <VIDEO-URL>,<FT-CAMPAIGN>,
-    { isPermutiveTracking: true },
-   ),
+   new reactPlayerTracking(window.FTTracker, <VIDEO-TITLE>, <VIDEO-URL>),
 )
 
 <ReactPlayer
