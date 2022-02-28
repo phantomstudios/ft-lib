@@ -84,9 +84,8 @@ player.on("progress", () => {   //event will be video player site implementation
 ### reactPlayerTracking
 
 Exports video event handlers that broadcast the required GA, oTracking and Permutive events.
-NOTE: Currently implemented for react-player implementations only but will be expanded to handle other video player implementations (Youtube Iframe API players specifically) which require slightly different 'progress' monitoring.
 
-The constructor takes the parent site's oTracking/Origami eventDispatcher function and video and site meta data (as required for the tracking data), along with an optional `options` object (see below)
+The constructor takes the parent site's FTTracking instance (typically set up as window.FTTracker) and video and site meta data (as required for the tracking data).
 
 Typical implementation:
 
@@ -106,13 +105,43 @@ const [videoTracker] = useState(
 >
 ```
 
-#### Default Options:
+### ytIframeTracking
 
-```
-  isPermutiveTracking: false,
-  routeUrl: window.location.href,
-  category: "video",
-  product: "paid-post",
+Exports a Youtube iframe event handler for sites using the Youtube Iframe API that broadcasts the required GA, oTracking and Permutive events.
+The Youtube iFrame can be either generated in the site's JS or template rendered.
+
+The constructor takes the parent site's FTTracking instance (typically set up as window.FTTracker).
+
+NOTE: For Typescript usage as below, the @types/youtube NPM package should be added to the parent project and the YT namespace added to tsconfig.json with the `"types": ["youtube"]` compiler option.
+
+Typical implementation:
+
+```Javascript
+import { ytIframeTracking } from '@phntms/ft-lib';
+
+const VIDEO_IFRAME_ID = 'video-iframe';
+
+export class YoutubeIframeLoader {
+  videoTracker: ytIframeTracking;
+  player?: YT.Player;
+
+  constructor() {
+   this.videoTracker = new ytIframeTracking(window.FTTracker);
+
+   window.onYouTubeIframeAPIReady =
+    (event: YT.PlayerEvent) => {
+      this.player = new YT.Player(VIDEO_IFRAME_ID, {
+        events: {
+          'onStateChange': (event) => this.onPlayerStateChange(event)
+        }
+      });
+    };
+
+   onPlayerStateChange(event: YT.PlayerEvent) {
+    this.videoTracker.ytIframeEventHandler(event);
+   }
+  }
+}
 ```
 
 [npm-image]: https://img.shields.io/npm/v/@phntms/ft-lib.svg?style=flat-square&logo=react
