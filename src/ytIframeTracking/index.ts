@@ -102,7 +102,12 @@ export class ytIframeTracking {
     const currentTime = player.getCurrentTime();
     const duration = player.getDuration();
     const progress = this.progressPercentage(duration, currentTime);
-    if (progress < 1) {
+    if (progress < 100) {
+      this.FTTracker.gtmEvent(
+        `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
+        `Play`,
+        `${window.gtmCategory} - Play`
+      );
       this.FTTracker.oEvent({
         category: "video",
         action: "playing",
@@ -114,6 +119,11 @@ export class ytIframeTracking {
 
   pausedTracking(currentTime: number, duration: number) {
     const progress = this.progressPercentage(duration, currentTime);
+    this.FTTracker.gtmEvent(
+      `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
+      `Pause`,
+      `${window.gtmCategory} - Pause`
+    );
     this.FTTracker.oEvent({
       category: "video",
       action: "pause",
