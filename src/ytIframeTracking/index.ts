@@ -7,12 +7,16 @@ export class ytIframeTracking {
   progressMilestones = [1, 25, 50, 75];
   permutiveUtils: permutiveVideoUtils;
   videoProgressInterval = 0;
+  videoTitle: string | undefined;
+  videoUrl: string | undefined;
 
-  constructor(FTTracker: FTTracking) {
+  constructor(FTTracker: FTTracking, videoTitle?: string, videoUrl?: string) {
     this.FTTracker = FTTracker;
+    this.videoTitle = videoTitle || window.location.pathname;
+    this.videoUrl = videoUrl;
     this.permutiveUtils = new permutiveVideoUtils(
       this.FTTracker.config.campaign,
-      this.FTTracker.config.campaign
+      this.videoTitle
     );
   }
 
@@ -28,7 +32,7 @@ export class ytIframeTracking {
       this.FTTracker.gtmEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `${this.progressMilestones[0]}% watched`,
-        `${window.gtmCategory} - Progress`
+        `${this.videoTitle}`
       );
       if (isYoutube) {
         this.FTTracker.oEvent({
@@ -65,7 +69,11 @@ export class ytIframeTracking {
 
   public ytIframeEventHandler(event: YT.PlayerEvent) {
     const player = event.target as YT.Player;
-    this.permutiveUtils.videoId = player.getVideoUrl(); //TODO test
+
+    if (!this.videoUrl) {
+      this.videoUrl = player.getVideoUrl();
+    }
+    this.permutiveUtils.videoId = this.videoUrl;
     //player.playerInfo.videoUrl
 
     switch (player.getPlayerState()) {
@@ -105,8 +113,8 @@ export class ytIframeTracking {
     if (progress < 100) {
       this.FTTracker.gtmEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
-        `Play`,
-        `${window.gtmCategory} - Play`
+        `playing`,
+        `${this.videoTitle}`
       );
       this.FTTracker.oEvent({
         category: "video",
@@ -121,8 +129,8 @@ export class ytIframeTracking {
     const progress = this.progressPercentage(duration, currentTime);
     this.FTTracker.gtmEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
-      `Pause`,
-      `${window.gtmCategory} - Pause`
+      `pause`,
+      `${this.videoTitle}`
     );
     this.FTTracker.oEvent({
       category: "video",
@@ -137,7 +145,7 @@ export class ytIframeTracking {
     this.FTTracker.gtmEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
       `100% watched`,
-      `${window.gtmCategory} - Progress`
+      `${this.videoTitle}`
     );
     this.FTTracker.oEvent({
       category: "video",
