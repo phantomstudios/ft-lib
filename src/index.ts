@@ -4,7 +4,7 @@ export { reactPlayerTracking } from "./reactPlayerTracking";
 export { gaTracker } from "./gaTracker";
 export { oTracker } from "./oTracker";
 export { ytIframeTracking } from "./ytIframeTracking";
-export { FTTracking } from "./FTTracking";
+export { FTTracking, TrackingOptions } from "./FTTracking";
 export {
   ConfigType,
   OrigamiEventType,
