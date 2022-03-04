@@ -7,7 +7,7 @@ export class ytIframeTracking {
   progressMilestones = [1, 25, 50, 75];
   permutiveUtils: permutiveVideoUtils;
   videoProgressInterval = 0;
-  videoTitle: string | undefined;
+  videoTitle: string;
   videoUrl: string | undefined;
 
   constructor(FTTracker: FTTracking, videoTitle?: string, videoUrl?: string) {
@@ -32,7 +32,7 @@ export class ytIframeTracking {
       this.FTTracker.gtmEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `${this.progressMilestones[0]}% watched`,
-        `${this.videoTitle}`
+        this.videoTitle
       );
       if (isYoutube) {
         this.FTTracker.oEvent({
@@ -114,7 +114,7 @@ export class ytIframeTracking {
       this.FTTracker.gtmEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `playing`,
-        `${this.videoTitle}`
+        this.videoTitle
       );
       this.FTTracker.oEvent({
         category: "video",
