@@ -27,7 +27,6 @@ export class gaTracker {
     });
   }
 
-  //
   public GtagEventDispatcher(category: string, action: string, label: string) {
     validateGTMCustomEvent({ category, action, label });
     window.gtag("event", action, {
@@ -38,18 +37,27 @@ export class gaTracker {
 
   addDataAttributesListener() {
     document.body.addEventListener("click", (evt) => {
-      //get nearest a tag with data-gadl attribute
-      const elm = (evt.target as HTMLElement).closest("a[data-gadl]");
+      //get nearest element with data-gadl attribute
+      const elm = (evt.target as HTMLElement).closest("[data-gadl]");
       const gaEventString = elm?.getAttribute("data-gadl");
       if (!gaEventString) return;
       const [category, action, label] = gaEventString.split("|");
+
       //TODO validate event fields
       if (typeof window !== "undefined") {
         //TBC - GTM customEvent tag vs standard UA event push?
         if (this.options.isCustomGTMEvent) {
-          this.GTMEventDispatcher(category, action, label);
+          this.GTMEventDispatcher(
+            category,
+            action,
+            label || window.location.pathname //use pathname if label section has not been defined
+          );
         } else {
-          this.GtagEventDispatcher(category, action, label);
+          this.GtagEventDispatcher(
+            category,
+            action,
+            label || window.location.pathname
+          );
         }
       }
     });
