@@ -3,7 +3,6 @@ import oTracking from "@financial-times/o-tracking";
 import { TrackingOptions } from "../FTTracking";
 import { getValueFromCookie } from "../utils/cookies";
 import getTrace from "../utils/getTrace";
-import { ScrollTracker } from "../utils/scroll";
 import {
   validateOrigamiEvent,
   ConfigType,
@@ -16,7 +15,6 @@ The config object is read from the server-rendered o-tracking-data element
 export class oTracker {
   private _config: ConfigType;
   options: TrackingOptions;
-  scrollTracker: ScrollTracker;
 
   constructor(config: ConfigType, options: TrackingOptions) {
     this._config = config;
@@ -37,7 +35,6 @@ export class oTracker {
 
     //setup listeners
     this.OTrackingHandler();
-    this.scrollTracker = new ScrollTracker(this);
 
     //send Origami DomLoaded event
     //document.dispatchEvent(new CustomEvent("o.DOMContentLoaded"));  //TODO this isnt needed on next and breaks the cookie-message eventhandlers - is it needed for the server sites?

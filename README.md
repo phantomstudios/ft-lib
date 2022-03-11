@@ -52,7 +52,7 @@ const config = JSON.parse(document.getElementById('o-tracking-data').textContent
 window.FTTracker = new FTTracking(config, { scrollTrackerSelector: '#content' })
 .
 .
-window.FTTracker.gtmEvent(`audio player`, '100% progress', window.gtmCategory)
+window.FTTracker.gtmEvent(`Audio`, '100% progress', <AUDIO or PAGE TITLE>)
 ```
 
 ### consentMonitor

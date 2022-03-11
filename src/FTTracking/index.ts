@@ -1,6 +1,7 @@
 import { consentMonitor } from "../consentMonitor";
 import { gaTracker } from "../gaTracker";
 import { oTracker } from "../oTracker";
+import { ScrollTracker } from "../utils/scroll";
 import {
   validateConfig,
   ConfigType,
@@ -22,6 +23,7 @@ export class FTTracking {
   options: TrackingOptions;
   oTracker: oTracker;
   gaTracker: gaTracker;
+  scrollTracker: ScrollTracker;
   oEvent: (detail: OrigamiEventType) => void;
   gtmEvent: (category: string, action: string, label: string) => void;
 
@@ -33,6 +35,8 @@ export class FTTracking {
     this.oEvent = this.oTracker.eventDispatcher;
     this.gtmEvent = this.gaTracker.GTMEventDispatcher;
     this._config = config;
+
+    this.scrollTracker = new ScrollTracker(this);
 
     //cookie consent monitor for permutive tracking
     window.addEventListener("load", () => {
@@ -53,7 +57,7 @@ export class FTTracking {
     this.oTracker.config = config;
     this.oTracker.broadcastPageView();
     this.oTracker.broadcastBrandedContent();
-    this.oTracker.scrollTracker.reset();
+    this.scrollTracker.reset();
     //ga pageview event required for sites without GTM?
   }
 }

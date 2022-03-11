@@ -1,4 +1,6 @@
 import { TrackingOptions } from "../FTTracking";
+import { FTTracking } from "../FTTracking";
+import { gaTracker } from "../gaTracker";
 import { oTracker } from "../oTracker";
 import { Attention } from "./attention";
 import "./intersectionObserverPolyfill";
@@ -6,13 +8,15 @@ import { ConfigType, OrigamiEventType } from "./yupValidator";
 
 export class ScrollTracker {
   oTracker: oTracker;
+  gaTracker: gaTracker;
   options: TrackingOptions;
   attention: any;
   config: ConfigType;
-  constructor(oTracker: oTracker) {
-    this.oTracker = oTracker;
-    this.options = oTracker.options;
-    this.config = oTracker.config;
+  constructor(FTTracker: FTTracking) {
+    this.oTracker = FTTracker.oTracker;
+    this.gaTracker = FTTracker.gaTracker;
+    this.options = FTTracker.options;
+    this.config = FTTracker.config;
 
     this.attention = new Attention(this.oTracker);
     this.scrollDepthInit([25, 50, 75, 100], this.options.scrollTrackerSelector);
@@ -70,6 +74,15 @@ export class ScrollTracker {
         };
 
         this.oTracker.eventDispatcher(data as OrigamiEventType);
+
+        //send GA scroll events if not GTM
+        if (!this.options.isCustomGTMEvent) {
+          this.gaTracker.GtagEventDispatcher(
+            "Scroll",
+            `scroll - ${percentagesViewed}%`,
+            window.location.pathname
+          );
+        }
 
         if (scrollDepthMarkerEl.parentNode) {
           scrollDepthMarkerEl.parentNode.removeChild(scrollDepthMarkerEl);
