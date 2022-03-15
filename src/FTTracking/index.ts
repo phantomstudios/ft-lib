@@ -25,6 +25,7 @@ export class FTTracking {
   gaTracker: gaTracker;
   scrollTracker: ScrollTracker;
   oEvent: (detail: OrigamiEventType) => void;
+  gaEvent: (category: string, action: string, label: string) => void;
   gtmEvent: (category: string, action: string, label: string) => void;
 
   constructor(config: ConfigType, options?: TrackingOptions) {
@@ -33,8 +34,13 @@ export class FTTracking {
     this.gaTracker = new gaTracker(this.options);
 
     this.oEvent = this.oTracker.eventDispatcher;
-    this.gtmEvent = this.gaTracker.GTMEventDispatcher;
+    this.gaEvent = this.options.isCustomGTMEvent
+      ? this.gaTracker.GTMEventDispatcher
+      : this.gaTracker.GtagEventDispatcher;
     this._config = config;
+
+    //backwards compatibility
+    this.gtmEvent = this.gaEvent;
 
     this.scrollTracker = new ScrollTracker(this);
 

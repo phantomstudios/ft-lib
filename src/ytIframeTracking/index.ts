@@ -29,7 +29,7 @@ export class ytIframeTracking {
     isYoutube: boolean
   ) => {
     while (progress >= this.progressMilestones[0]) {
-      this.FTTracker.gtmEvent(
+      this.FTTracker.gaEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `${this.progressMilestones[0]}% watched`,
         this.videoTitle
@@ -111,7 +111,7 @@ export class ytIframeTracking {
     const duration = player.getDuration();
     const progress = this.progressPercentage(duration, currentTime);
     if (progress < 100) {
-      this.FTTracker.gtmEvent(
+      this.FTTracker.gaEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `playing`,
         this.videoTitle
@@ -127,7 +127,7 @@ export class ytIframeTracking {
 
   pausedTracking(currentTime: number, duration: number) {
     const progress = this.progressPercentage(duration, currentTime);
-    this.FTTracker.gtmEvent(
+    this.FTTracker.gaEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
       `pause`,
       `${this.videoTitle}`
@@ -142,7 +142,7 @@ export class ytIframeTracking {
 
   endedTracking(currentTime: number, duration: number) {
     const progress = this.progressPercentage(duration, currentTime);
-    this.FTTracker.gtmEvent(
+    this.FTTracker.gaEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
       `100% watched`,
       `${this.videoTitle}`

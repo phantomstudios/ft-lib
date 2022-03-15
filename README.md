@@ -29,7 +29,7 @@ npm i @phntms/ft-lib
 ### FTTracking
 
 Shared Origami and GA/GTM tracking implementation that can be used across all Phantom FT sites. Tracking meta data is provided by a config object when first initiated and on subsequent route changes (only required for SPA/NextJS sites).
-By default, the implementation will automatically handle FT tracking via `data-gadl` and `data-o-event` HTML attributes. The tracker instance can be added to the global window namespace if custom events are required.
+By default, the implementation will automatically handle FT tracking via `data-gadl` and `data-o-event` HTML attributes. The tracker instance should be added to the global window namespace if custom events are required.
 Note: By default the FTTracker instance will load the `consentMonitor` poller, so sites do not need to implement this separately.
 
 The constructor requires the config JSON object (TODO - schema) and optionally accepts an options object:
@@ -38,9 +38,13 @@ The constructor requires the config JSON object (TODO - schema) and optionally a
 
 ```
   scrollTrackerSelector: "#o_tracker_scroll",  //top level DOM element selector for scroll tracking
-  isCustomGTMEvent: true, //selects between GTM and UA event formats
+  isCustomGTMEvent: true, //selects between GTM and UA(GTAG) event formats - TODO - handle automatically by detecting loaded GTM/UA?
 
 ```
+
+#### Config/Event format validator
+
+The site config JSON object passed in the constructor and all events handled by FTTracker are validated with Yup for a basic format check. This includes both the automatic `data-o-event`, `data-gadl` generated events and manually fired events with `FTTracker.oEvent` and `FTTracker.gaEvent`. A console error is thrown if validation fails. The validation rules can be found in `/src/utils/yupValidator.ts`
 
 Typical usage:
 
@@ -52,7 +56,9 @@ const config = JSON.parse(document.getElementById('o-tracking-data').textContent
 window.FTTracker = new FTTracking(config, { scrollTrackerSelector: '#content' })
 .
 .
-window.FTTracker.gtmEvent(`Audio`, '100% progress', <AUDIO or PAGE TITLE>)
+//if an event needs to be fired that can't be added using the preferred data-gadl and data-o-event attributes (i.e. custom players or form submits):
+window.FTTracker.oEvent({category: "audio", action: "progress", duration: duration, progress: {`${progress}%`}})
+window.FTTracker.gaEvent(`Audio`, {`${progress}% progress`}, <AUDIO or PAGE TITLE>)
 ```
 
 ### consentMonitor
