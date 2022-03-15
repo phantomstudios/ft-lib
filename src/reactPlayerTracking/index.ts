@@ -41,7 +41,7 @@ export class reactPlayerTracking {
 
   sendGAEvent = (action: string) => {
     debug("GA datalayer push - " + action);
-    this.FTTracker.gtmEvent("Video", action, this.videoTitle);
+    this.FTTracker.gaEvent("Video", action, this.videoTitle);
   };
 
   sendoTrackingEvent = (action: string, progress?: number) => {

@@ -8,31 +8,6 @@ import {
   ValidationError,
 } from "yup";
 
-/*
-  {
-    "product": "paid-post",
-    "url": "https://channels.ft.com/en/bigdeal/healthtech-sectors-spectacular-surge-in-spacs-and-despacs/",
-    "feature": "channel",
-    "author": "Alphagrid",
-    "sponsor": "Baker McKenzie",
-    "articleName": "The healthtech sector’s spectacular surge in Spacs and de-Spacs",
-    "videoName": "None",
-    "videoType": "Animation",
-    "hasVideo": true,
-    "primaryTopic": "Companies",
-    "secondaryTopic": "Health sector",
-    "advertiserIndustry": "Legal",
-    "app": "video",
-    "publishDate": "2022-01-20",
-    "isBranded": false,
-    "contentType": "thought leadership",
-    "campaign": "Big Deal",
-    "server": "https://spoor-api.ft.com/px.gif",
-    "title": "",
-    "adbook_campaign_id": "308120"
-  }
-*/
-
 const configSchema = object({
   product: string().equals(["paid-post"]),
   url: string().required().url(),
