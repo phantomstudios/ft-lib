@@ -104,9 +104,9 @@ export class gaTracker {
     );
     if (FTFooterLinks) {
       FTFooterLinks.forEach((footerLink) => {
-        const trackingValue = `Footer|Click - Footer Nav|${document.URL} - ${
+        const trackingValue = `Footer|Click - Footer Nav - ${
           (footerLink as HTMLAnchorElement).href
-        }`;
+        }|${document.URL}`;
         footerLink.setAttribute("data-gadl", trackingValue);
       });
     }

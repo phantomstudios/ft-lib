@@ -66,6 +66,7 @@ const origamiEventSchema = object({
       "internal click",
       "external click",
       "share",
+      "subscribe",
     ]),
   action: string().required(),
   app: string().nullable().notRequired(),
