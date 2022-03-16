@@ -86,13 +86,27 @@ export class gaTracker {
           document.querySelector(".o-header__search-term") as HTMLInputElement
         )?.value;
         if (typeof window !== "undefined") {
-          window.dataLayer.push("event", action, {
-            event_category: category,
-            event_label: searchBarContent,
-            event_callback: () => {
-              (searchForm as HTMLFormElement).submit();
-            },
-          });
+          if (this.options.isCustomGTMEvent) {
+            window.dataLayer.push({
+              event: "customEvent",
+              category,
+              action: `${action}: ${searchBarContent}`,
+              label: window.location.pathname,
+              eventCallback: () => {
+                (searchForm as HTMLFormElement).submit();
+              },
+              eventTimeout: 2000,
+            });
+          } else {
+            window.gtag("event", action, {
+              event_category: category,
+              event_label: searchBarContent,
+              event_callback: () => {
+                (searchForm as HTMLFormElement).submit();
+              },
+              event_timeout: 2000,
+            });
+          }
         }
       });
     }
