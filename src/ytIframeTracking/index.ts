@@ -12,7 +12,8 @@ export class ytIframeTracking {
 
   constructor(FTTracker: FTTracking, videoTitle?: string, videoUrl?: string) {
     this.FTTracker = FTTracker;
-    this.videoTitle = videoTitle || window.location.pathname;
+    this.videoTitle =
+      videoTitle || window.gtmCategory || window.location.pathname; //reverted fix for channels - use window.gtmCategory to maintain the original label style
     this.videoUrl = videoUrl;
     this.permutiveUtils = new permutiveVideoUtils(
       this.FTTracker.config.campaign,
