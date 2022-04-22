@@ -10,9 +10,11 @@ A collection of Javascript utils for shareable UI and tracking functionality acr
 
 currently implemented:
 
+- FTTracking - Consolidated Origami and GA/GTM event tracking for page and interaction events.
 - consentMonitor - polls the FT consent cookies set by the approved FT Origami cookie banner to enable/disable the FT Permutive ad tracking
 - permutiveVideoUtils - formatted permutive video progress events
-- reactPlayerTracking - Consolidated video tracking (Google Analytics, FT Origami, Permutive) event handlers for FT sites implementing videos with [react-player](https://github.com/cookpete/react-player)
+- reactPlayerTracking - Video tracking for FT sites implementing videos with [react-player](https://github.com/cookpete/react-player)
+- ytIframeEventHandler - Video tracking handler for FT sites with embedded Youtube Iframe API videos.
 
 ## Installation
 
@@ -23,6 +25,41 @@ npm i @phntms/ft-lib
 ```
 
 ## Usage
+
+### FTTracking
+
+Shared Origami and GA/GTM tracking implementation that can be used across all Phantom FT sites. Tracking meta data is provided by a config object when first initiated and on subsequent route changes (only required for SPA/NextJS sites).
+By default, the implementation will automatically handle FT tracking via `data-gadl` and `data-o-event` HTML attributes. The tracker instance should be added to the global window namespace if custom events are required.
+Note: By default the FTTracker instance will load the `consentMonitor` poller, so sites do not need to implement this separately.
+
+The constructor requires the config JSON object (TODO - schema) and optionally accepts an options object:
+
+#### Default options
+
+```
+  scrollTrackerSelector: "#o_tracker_scroll",  //top level DOM element selector for scroll tracking
+  isCustomGTMEvent: true, //selects between GTM and UA(GTAG) event formats - TODO - handle automatically by detecting loaded GTM/UA?
+
+```
+
+#### Config/Event format validator
+
+The site config JSON object passed in the constructor and all events handled by FTTracker are validated with Yup for a basic format check. This includes both the automatic `data-o-event`, `data-gadl` generated events and manually fired events with `FTTracker.oEvent` and `FTTracker.gaEvent`. A console error is thrown if validation fails. The validation rules can be found in `/src/utils/yupValidator.ts`
+
+Typical usage:
+
+```Javascript
+import { FTTracking } from '@phntms/ft-lib'
+
+//For Wagtail sites, get server-rendered o-tracking-data
+const config = JSON.parse(document.getElementById('o-tracking-data').textContent)
+window.FTTracker = new FTTracking(config, { scrollTrackerSelector: '#content' })
+.
+.
+//if an event needs to be fired that can't be added using the preferred data-gadl and data-o-event attributes (i.e. custom players or form submits):
+window.FTTracker.oEvent({category: "audio", action: "progress", duration: duration, progress: {`${progress}%`}})
+window.FTTracker.gaEvent(`Audio`, {`${progress}% progress`}, <AUDIO or PAGE TITLE>)
+```
 
 ### consentMonitor
 
@@ -53,9 +90,8 @@ player.on("progress", () => {   //event will be video player site implementation
 ### reactPlayerTracking
 
 Exports video event handlers that broadcast the required GA, oTracking and Permutive events.
-NOTE: Currently implemented for react-player implementations only but will be expanded to handle other video player implementations (Youtube Iframe API players specifically) which require slightly different 'progress' monitoring.
 
-The constructor takes the parent site's oTracking/Origami eventDispatcher function and video and site meta data (as required for the tracking data), along with an optional `options` object (see below)
+The constructor takes the parent site's FTTracking instance (typically set up as window.FTTracker) and video and site meta data (as required for the tracking data).
 
 Typical implementation:
 
@@ -63,9 +99,7 @@ Typical implementation:
 import { reactPlayerTracking } from "@phntms/ft-lib";
 
 const [videoTracker] = useState(
-   new reactPlayerTracking(eventDispatcher, <VIDEO-TITLE>, <VIDEO-URL>,<FT-CAMPAIGN>,
-    { isPermutiveTracking: true },
-   ),
+   new reactPlayerTracking(window.FTTracker, <VIDEO-TITLE>, <VIDEO-URL>),
 )
 
 <ReactPlayer
@@ -77,13 +111,43 @@ const [videoTracker] = useState(
 >
 ```
 
-### Default Options:
+### ytIframeTracking
 
-```
-  isPermutiveTracking: false,
-  routeUrl: window.location.href,
-  category: "video",
-  product: "paid-post",
+Exports a Youtube iframe event handler for sites using the Youtube Iframe API that broadcasts the required GA, oTracking and Permutive events.
+The Youtube iFrame can be either generated in the site's JS or template rendered.
+
+The constructor takes the parent site's FTTracking instance (typically set up as window.FTTracker).
+
+NOTE: For Typescript usage as below, the @types/youtube NPM package should be added to the parent project and the YT namespace added to tsconfig.json with the `"types": ["youtube"]` compiler option.
+
+Typical implementation:
+
+```Javascript
+import { ytIframeTracking } from '@phntms/ft-lib';
+
+const VIDEO_IFRAME_ID = 'video-iframe';
+
+export class YoutubeIframeLoader {
+  videoTracker: ytIframeTracking;
+  player?: YT.Player;
+
+  constructor() {
+   this.videoTracker = new ytIframeTracking(window.FTTracker);
+
+   window.onYouTubeIframeAPIReady =
+    (event: YT.PlayerEvent) => {
+      this.player = new YT.Player(VIDEO_IFRAME_ID, {
+        events: {
+          'onStateChange': (event) => this.onPlayerStateChange(event)
+        }
+      });
+    };
+
+   onPlayerStateChange(event: YT.PlayerEvent) {
+    this.videoTracker.ytIframeEventHandler(event);
+   }
+  }
+}
 ```
 
 [npm-image]: https://img.shields.io/npm/v/@phntms/ft-lib.svg?style=flat-square&logo=react

@@ -1,72 +1,38 @@
-/** FT tracking video event handlers for React-Player event handler props (onEnded, onPause, onPlay, onProgress) */
 import Debug from "debug";
 
+import { FTTracking } from "../FTTracking";
 import { permutiveVideoUtils } from "../permutiveVideoUtils";
+import { OrigamiEventType } from "../utils/yupValidator";
 const debug = Debug("@phntms/ft-lib");
-
-interface Options {
-  isPermutiveTracking?: boolean;
-  routeUrl?: string;
-  /** video/article/stream  */
-  category?: string;
-  /** paid-post */
-  product?: string;
-}
-
-const DEFAULT_OPTIONS = {
-  isPermutiveTracking: false,
-  routeUrl: typeof window !== "undefined" ? window.location.href : undefined,
-  category: "video",
-  product: "paid-post",
-};
-
 interface PlayerProgressEvent {
   played: number;
   loaded: number;
   playedSeconds: number;
   loadedSeconds: number;
 }
-
 export class reactPlayerTracking {
   duration = 0;
   playedSeconds = 0;
   playedPercent = 0;
-  oTrackingEvent: ({}) => void;
-  gaDataLayer: Window["dataLayer"];
   videoTitle: string;
   videoUrl: string;
-  campaign: string;
-  options: Options;
+
   /** 100% is fired with ended event */
-  GA_milestones: number[] = [1, 25, 50];
+  GA_milestones: number[] = [1, 25, 50, 75];
   oTracking_milestones: number[] = [25, 50, 75];
+  FTTracker: FTTracking;
   permutiveTracker: permutiveVideoUtils | undefined;
 
-  constructor(
+  constructor(FTTracker: FTTracking, videoTitle: string, videoUrl: string) {
     /** oTracking dispatch event function */
-    oTrackingEvent: any,
-    /** video page title */
-    videoTitle: string,
-    /** video/youtube url or youtube ID */
-    videoUrl: string,
-    /** From brand tracking template, e.g.  Shaping Digital Future */
-    campaign: string,
-    /** optional config */
-    options?: Options
-  ) {
-    this.oTrackingEvent = oTrackingEvent;
-    this.gaDataLayer = typeof window !== "undefined" && window.dataLayer;
+    this.FTTracker = FTTracker;
     this.videoTitle = videoTitle;
     this.videoUrl = videoUrl;
-    this.campaign = campaign;
-    this.options = { ...DEFAULT_OPTIONS, ...options };
-    if (this.options.isPermutiveTracking) {
-      this.permutiveTracker = new permutiveVideoUtils(
-        campaign,
-        videoTitle,
-        videoUrl
-      );
-    }
+    this.permutiveTracker = new permutiveVideoUtils(
+      this.FTTracker.config.campaign,
+      this.videoTitle,
+      this.videoUrl
+    );
   }
 
   setDuration = (duration: number) => {
@@ -74,28 +40,20 @@ export class reactPlayerTracking {
   };
 
   sendGAEvent = (action: string) => {
-    if (this.gaDataLayer) {
-      debug("GA datalayer push - " + action);
-      this.gaDataLayer.push({
-        event: "customEvent",
-        action: action,
-        category: this.options.category,
-        label: this.videoTitle,
-      });
-    }
+    debug("GA datalayer push - " + action);
+    this.FTTracker.gaEvent("Video", action, this.videoTitle);
   };
 
   sendoTrackingEvent = (action: string, progress?: number) => {
     debug("oTracking event - " + action);
-    this.oTrackingEvent({
-      category: this.options.category,
+    this.FTTracker.oEvent({
+      category: "video",
       action: action,
-      product: this.options.product,
-      app: this.options.category,
+      product: this.FTTracker.config.product,
+      app: this.FTTracker.config.app,
       duration: this.duration,
-      progress: progress ? `${progress}%` : `${this.playedPercent}%`,
-      url: this.options.routeUrl,
-    });
+      ...(progress && { progress: progress }),
+    } as OrigamiEventType);
   };
 
   trackPlay = () => {
@@ -138,12 +96,10 @@ export class reactPlayerTracking {
     }
 
     //permutive only tracks progress events and contains its own milestones
-    if (this.options.isPermutiveTracking) {
-      debug("edit permutive progress event- " + this.playedSeconds);
-      this.permutiveTracker?.emitPermutiveProgressEvent(
-        this.duration,
-        this.playedSeconds
-      );
-    }
+    debug("edit permutive progress event- " + this.playedSeconds);
+    this.permutiveTracker?.emitPermutiveProgressEvent(
+      this.duration,
+      this.playedSeconds
+    );
   };
 }

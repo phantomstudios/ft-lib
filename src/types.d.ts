@@ -1,10 +1,16 @@
+declare module "@financial-times/o-tracking";
+declare module "@financial-times/o-viewport";
+
 interface Window {
   dataLayer: any;
+  gtag: any;
   permutive: {
     addon: any;
     consent: CallableConsent;
     track: any;
   };
+  gtmCategory?: string; //channels only
+  isOvideoPlayer?: boolean; //channels only
 }
 
 interface ConsentOptions {
