@@ -42,6 +42,7 @@ const gtmCustomEventSchema = object({
       "Internal click",
       "External click",
       "Video",
+      "Video:fallback",
       "Audio",
       "Scroll",
       "Share",
