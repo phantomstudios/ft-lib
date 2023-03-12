@@ -27,6 +27,14 @@ export class gaTracker {
     });
   }
 
+  public GTMVirtualPageView(pageUrl: string, pageTitle: string) {
+    window.dataLayer.push({
+      event: "virtualPageView",
+      pageUrl,
+      pageTitle,
+    });
+  }
+
   public GtagEventDispatcher(category: string, action: string, label: string) {
     validateGTMCustomEvent({ category, action, label });
     window.gtag("event", action, {

@@ -11,11 +11,13 @@ import {
 export interface TrackingOptions {
   scrollTrackerSelector?: string;
   isCustomGTMEvent?: boolean;
+  sendGTMPageViewYN?: boolean;
 }
 
 const DEFAULT_OPTIONS = {
   scrollTrackerSelector: "#o_tracker_scroll",
   isCustomGTMEvent: true,
+  sendGTMPageViewYN: true,
 };
 
 export class FTTracking {
@@ -64,6 +66,9 @@ export class FTTracking {
     this.oTracker.broadcastPageView();
     this.oTracker.broadcastBrandedContent();
     this.scrollTracker.reset();
+    if (this.options.sendGTMPageViewYN) {
+      this.gaTracker.GTMVirtualPageView(this.config.url, this.config.title);
+    }
     //ga pageview event required for sites without GTM?
   }
 }
