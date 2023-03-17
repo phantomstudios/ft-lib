@@ -17,7 +17,7 @@ export interface TrackingOptions {
 const DEFAULT_OPTIONS = {
   scrollTrackerSelector: "#o_tracker_scroll",
   isCustomGTMEvent: true,
-  sendGTMPageViewYN: true,
+  sendGTMPageViewYN: false,
 };
 
 export class FTTracking {
