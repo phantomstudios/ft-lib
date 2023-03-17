@@ -52,7 +52,6 @@ export class FTTracking {
     });
   }
   set config(c: ConfigType) {
-    validateConfig(c);
     this._config = c;
     this.oTracker.config = c;
   }
@@ -62,6 +61,7 @@ export class FTTracking {
 
   public newPageView(config: ConfigType) {
     //Update passed config to otracker,send pageview events and reset scrollTracker
+    validateConfig(config);
     this.oTracker.config = config;
     this.oTracker.broadcastPageView();
     this.oTracker.broadcastBrandedContent();
