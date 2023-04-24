@@ -12,7 +12,7 @@ import {
 const unifyValuesTransform = (value: string) => {
   return (
     value.charAt(0).toUpperCase() +
-    value.slice(1).toLowerCase().replace(" ", "_").replace("-", "_")
+    value.slice(1).toLowerCase().replace(/ /g, "_").replace(/ /g, "_")
   );
 };
 
