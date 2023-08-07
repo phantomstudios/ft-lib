@@ -60,6 +60,8 @@ const configSchema = object({
   title: string().defined().default(""),
   adbook_campaign_id: string().optional().default(""),
   source_id: string().optional(),
+  wordCount: string().optional().default(""),
+  commercial_product: string().optional().default("ft"),
 });
 
 const gtmCustomEventSchema = object({
