@@ -10,6 +10,20 @@ import {
 
 //transform passed values to first character uppercase and replace spaces with underscores
 const unifyValuesTransform = (value: string) => {
+  if (value.toLowerCase() === "alphagrid") {
+    return;
+  }
+  return (
+    value.charAt(0).toUpperCase() +
+    value.slice(1).toLowerCase().replace(/ /g, "_").replace(/ /g, "_")
+  );
+};
+
+//replace legacy 'AlphaGrid'..
+const authorTransform = (value: string) => {
+  if (value.toLowerCase() === "alphagrid") {
+    return "Alpha_Grid";
+  }
   return (
     value.charAt(0).toUpperCase() +
     value.slice(1).toLowerCase().replace(/ /g, "_").replace(/ /g, "_")
@@ -20,7 +34,7 @@ const configSchema = object({
   product: string().equals(["paid-post"]),
   url: string().required(),
   feature: string().required().oneOf(["channel", "microsite"]),
-  author: string().defined().default("").transform(unifyValuesTransform),
+  author: string().defined().default("").transform(authorTransform),
   sponsor: string().defined().default(""),
   articleName: string().defined().default(""),
   videoName: string().defined().default(""),
@@ -60,7 +74,7 @@ const configSchema = object({
   title: string().defined().default(""),
   adbook_campaign_id: string().optional().default(""),
   source_id: string().optional(),
-  wordCount: string().optional().default(""),
+  wordCount: number().optional(),
   commercial_product: string().optional().default("ft"),
 });
 
@@ -129,7 +143,12 @@ export const parseConfig = (config: ConfigType): ConfigType => {
     if (config.hasVideo && config.app.toLowerCase() === "article") {
       config.app === "Article_with_video";
     }
+
     delete config.hasVideo;
+    //Parse wordCount as number if not already
+    if (config.wordCount) {
+      config.wordCount = Number(config.wordCount);
+    }
     return configSchema.cast(config);
   } catch (err: any) {
     err.errors?.map((err: Error) => {
