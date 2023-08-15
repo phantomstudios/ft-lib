@@ -10,12 +10,9 @@ import {
 
 //transform passed values to first character uppercase and replace spaces with underscores
 const unifyValuesTransform = (value: string) => {
-  if (value.toLowerCase() === "alphagrid") {
-    return;
-  }
   return (
-    value.charAt(0).toUpperCase() +
-    value.slice(1).toLowerCase().replace(/ /g, "_").replace(/ /g, "_")
+    value.trim().charAt(0).toUpperCase() +
+    value.trim().slice(1).toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
   );
 };
 
@@ -25,8 +22,8 @@ const authorTransform = (value: string) => {
     return "Alpha_Grid";
   }
   return (
-    value.charAt(0).toUpperCase() +
-    value.slice(1).toLowerCase().replace(/ /g, "_").replace(/ /g, "_")
+    value.trim().charAt(0).toUpperCase() +
+    value.trim().slice(1).toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
   );
 };
 
