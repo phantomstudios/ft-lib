@@ -4,6 +4,8 @@ import { TrackingOptions } from "../FTTracking";
 import { getValueFromCookie } from "../utils/cookies";
 import getTrace from "../utils/getTrace";
 import {
+  parseConfig,
+  validateConfig,
   validateOrigamiEvent,
   ConfigType,
   OrigamiEventType,
@@ -17,7 +19,8 @@ export class oTracker {
   options: TrackingOptions;
 
   constructor(config: ConfigType, options: TrackingOptions) {
-    this._config = config;
+    this._config = parseConfig(config);
+    validateConfig(this._config);
     this._config.source_id = oTracking.getRootID();
     this.options = options;
 
