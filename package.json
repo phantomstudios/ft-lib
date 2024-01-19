@@ -1,5 +1,5 @@
 {
-  "name": "@phntms/ft-lib",
+  "name": "@phantomstudios/ft-lib",
   "description": "A collection of Javascript UI & tracking utils for FT sites",
   "version": "0.2.0",
   "main": "lib/index.js",
