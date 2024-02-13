@@ -1,7 +1,7 @@
 {
   "name": "@phantomstudios/ft-lib",
   "description": "A collection of Javascript UI & tracking utils for FT sites",
-  "version": "0.2.0",
+  "version": "0.3.0-rc3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "homepage": "https://github.com/phantomstudios/ft-lib#readme",
@@ -40,7 +40,6 @@
     "@babel/preset-typescript": "^7.13.0",
     "@types/debug": "^4.1.7",
     "@types/jest": "^26.0.23",
-    "@types/react": "^17.0.6",
     "@types/youtube": "^0.0.46",
     "@types/yup": "^0.32.0",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
@@ -58,9 +57,6 @@
     "jest": "^26.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-test-renderer": "^17.0.2",
     "set-value": ">=4.0.1",
     "ts-jest": "^26.5.6",
     "typescript": "^4.2.4"
@@ -69,7 +65,7 @@
     "yup": "^1.0.2"
   },
   "peerDependencies": {
-    "@financial-times/o-tracking": "^3.1.4",
-    "@financial-times/o-viewport": "^4.0.5"
+    "@financial-times/o-tracking": "^4.5.1",
+    "@financial-times/o-viewport": "^5.1.2"
   }
 }
