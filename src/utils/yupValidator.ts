@@ -28,7 +28,7 @@ const authorTransform = (value: string) => {
 };
 
 const configSchema = object({
-  product: string().onOf(["paid-post", "commercial-ft-com"]),
+  product: string().oneOf(["paid-post", "commercial-ft-com"]),
   url: string().required(),
   feature: string().required().oneOf(["channel", "microsite", "commercial"]),
   author: string().defined().default("").transform(authorTransform),
