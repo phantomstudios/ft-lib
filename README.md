@@ -21,7 +21,7 @@ currently implemented:
 Install this package with `npm`.
 
 ```bash
-npm i @phntms/ft-lib
+npm i @phantomstudios/ft-lib
 ```
 
 ## Usage
@@ -49,7 +49,7 @@ The site config JSON object passed in the constructor and all events handled by 
 Typical usage:
 
 ```Javascript
-import { FTTracking } from '@phntms/ft-lib'
+import { FTTracking } from '@phantomstudios/ft-lib'
 
 //For Wagtail sites, get server-rendered o-tracking-data
 const config = JSON.parse(document.getElementById('o-tracking-data').textContent)
@@ -67,7 +67,7 @@ Adds an FT consent cookie poller to enable/disable Permutive consent (only usefu
 There are optional constructor args for the hostname (defaults to window.location.hostname) and the dev environment host matches (defaults to ["localhost", "phq", "vercel.app"]) which are used to determine development environments in order to generate an FT banner event listener ((see [here](https://registry.origami.ft.com/components/o-cookie-message@6.0.1/readme?brand=master) for a list of banner DOM events) to set session-level cookies for development environments
 
 ```Javascript
-import { consentMonitor } from "@phntms/ft-lib";
+import { consentMonitor } from "@phantomstudios/ft-lib";
 
 new consentMonitor("FT.staging.testsite.com". ["localhost", "phq", "staging"]);
 ```
@@ -78,7 +78,7 @@ emitPermutiveProgressEvents - used within a video player's progress event handle
 Optional 3rd arg to pass a window.interval instance to be cleared once progress is complete.
 
 ```Javascript
-import { permutiveVideoUtils } from "@phntms/ft-lib";
+import { permutiveVideoUtils } from "@phantomstudios/ft-lib";
 
 const permutivevideoTracker = new permutiveVideoUtils("<FT-CAMPAIGN>","<VIDEO-TITLE>","<VIDEO-ID/URL>")  //Data will be site implementation specific
 
@@ -96,7 +96,7 @@ The constructor takes the parent site's FTTracking instance (typically set up as
 Typical implementation:
 
 ```Javascript
-import { reactPlayerTracking } from "@phntms/ft-lib";
+import { reactPlayerTracking } from "@phantomstudios/ft-lib";
 
 const [videoTracker] = useState(
    new reactPlayerTracking(window.FTTracker, <VIDEO-TITLE>, <VIDEO-URL>),
@@ -123,7 +123,7 @@ NOTE: For Typescript usage as below, the @types/youtube NPM package should be ad
 Typical implementation:
 
 ```Javascript
-import { ytIframeTracking } from '@phntms/ft-lib';
+import { ytIframeTracking } from '@phantomstudios/ft-lib';
 
 const VIDEO_IFRAME_ID = 'video-iframe';
 
@@ -150,9 +150,9 @@ export class YoutubeIframeLoader {
 }
 ```
 
-[npm-image]: https://img.shields.io/npm/v/@phntms/ft-lib.svg?style=flat-square&logo=react
-[npm-url]: https://npmjs.org/package/@phntms/ft-lib
-[npm-downloads-image]: https://img.shields.io/npm/dm/@phntms/ft-lib.svg
-[npm-downloads-url]: https://npmcharts.com/compare/@phntms/ft-lib?minimal=true
+[npm-image]: https://img.shields.io/npm/v/@phantomstudios/ft-lib.svg?style=flat-square&logo=react
+[npm-url]: https://npmjs.org/package/@phantomstudios/ft-lib
+[npm-downloads-image]: https://img.shields.io/npm/dm/@phantomstudios/ft-lib.svg
+[npm-downloads-url]: https://npmcharts.com/compare/@phantomstudios/ft-lib?minimal=true
 [ci-image]: https://github.com/phantomstudios/ft-lib/workflows/test/badge.svg
 [ci-url]: https://github.com/phantomstudios/ft-lib/actions
