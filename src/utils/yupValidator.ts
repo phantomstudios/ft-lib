@@ -28,9 +28,9 @@ const authorTransform = (value: string) => {
 };
 
 const configSchema = object({
-  product: string().equals(["paid-post"]),
+  product: string().oneOf(["paid-post", "commercial-ft-com"]),
   url: string().required(),
-  feature: string().required().oneOf(["channel", "microsite"]),
+  feature: string().required().oneOf(["channel", "microsite", "commercial"]),
   author: string().defined().default("").transform(authorTransform),
   sponsor: string().defined().default(""),
   articleName: string().defined().default(""),
@@ -62,6 +62,14 @@ const configSchema = object({
       "Infographic",
       "Interactive_infographic",
       "Photo_essay",
+      "home-page",
+      "capabilities",
+      "my-products",
+      "audience",
+      "case-studies",
+      "markets",
+      "news-and-insights",
+      "others",
     ]),
   publishDate: string().nullable().default(""),
   isBranded: boolean().defined(),
