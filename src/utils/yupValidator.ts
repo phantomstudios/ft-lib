@@ -69,7 +69,7 @@ const configSchema = object({
       "case-studies",
       "markets",
       "news-and-insights",
-      "others"
+      "others",
     ]),
   publishDate: string().nullable().default(""),
   isBranded: boolean().defined(),
