@@ -75,25 +75,6 @@ const configSchema = object({
   commercial_product: string().optional().default("ft"),
 });
 
-const gtmCustomEventSchema = object({
-  category: string()
-    .required()
-    .oneOf([
-      "Internal click",
-      "External click",
-      "Video",
-      "Video:fallback",
-      "Audio",
-      "Scroll",
-      "Share",
-      "Form",
-      "Header",
-      "Footer",
-    ]),
-  action: string().required(),
-  label: string().required(),
-});
-
 const origamiEventSchema = object({
   category: string()
     .required()
@@ -131,7 +112,6 @@ const origamiEventSchema = object({
 });
 
 export type ConfigType = InferType<typeof configSchema>;
-export type GTMCustomEventType = InferType<typeof gtmCustomEventSchema>;
 export type OrigamiEventType = InferType<typeof origamiEventSchema>;
 
 export const parseConfig = (config: ConfigType): ConfigType => {
@@ -166,22 +146,6 @@ export const validateConfig = (
   } catch (err: any) {
     err.errors?.map((err: ValidationError) => {
       console.error("FTTracker - config validation error: " + err);
-    });
-  }
-  return undefined;
-};
-
-export const validateGTMCustomEvent = (
-  event: GTMCustomEventType
-): ValidationError[] | undefined => {
-  try {
-    gtmCustomEventSchema.validateSync(event, {
-      strict: true,
-      abortEarly: false,
-    });
-  } catch (err: any) {
-    err.errors?.map((err: ValidationError) => {
-      console.error("FTTracker - GTM custom event validation error: " + err);
     });
   }
   return undefined;

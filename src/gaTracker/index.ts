@@ -1,5 +1,4 @@
 import { TrackingOptions } from "../FTTracking";
-import { validateGTMCustomEvent } from "../utils/yupValidator";
 const HEADER_CATEGORY = "Header";
 const HEADER_SEARCH_ACTION = "Engagement - Search";
 
@@ -13,8 +12,9 @@ export class gaTracker {
     this.setupFooterLinksTracking();
   }
 
-  public GTMEventDispatcher(category: string, action: string, label: string) {
-    validateGTMCustomEvent({ category, action, label });
+  /*Dhia - Nov 2023 - For new FT GA4 implementations, customEvents typically only need a single property name (i.e category as the GA4 'event name')
+  so the other properties are now optional */
+  public GTMEventDispatcher(category: string, action = "", label = "") {
     //from channels - sets event categories on window on certain pages..replace?
     if (category === "<category>" && window.gtmCategory) {
       category = window.gtmCategory;
@@ -36,7 +36,6 @@ export class gaTracker {
   }
 
   public GtagEventDispatcher(category: string, action: string, label: string) {
-    validateGTMCustomEvent({ category, action, label });
     window.gtag("event", action, {
       event_category: category,
       event_label: label,
@@ -51,9 +50,7 @@ export class gaTracker {
       if (!gaEventString) return;
       const [category, action, label] = gaEventString.split("|");
 
-      //TODO validate event fields
       if (typeof window !== "undefined") {
-        //TBC - GTM customEvent tag vs standard UA event push?
         if (this.options.isCustomGTMEvent) {
           this.GTMEventDispatcher(
             category,
