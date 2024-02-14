@@ -1,9 +1,9 @@
+import { Attention } from "./attention";
+import { ConfigType, OrigamiEventType } from "./yupValidator";
 import { TrackingOptions } from "../FTTracking";
 import { FTTracking } from "../FTTracking";
 import { gaTracker } from "../gaTracker";
 import { oTracker } from "../oTracker";
-import { Attention } from "./attention";
-import { ConfigType, OrigamiEventType } from "./yupValidator";
 
 import "./intersectionObserverPolyfill";
 
