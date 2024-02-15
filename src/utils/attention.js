@@ -1,4 +1,4 @@
-import * as oViewport from "@financial-times/o-viewport";
+import oViewport from "@financial-times/o-viewport";
 
 const ATTENTION_INTERVAL = 15000;
 const ATTENTION_EVENTS = [
