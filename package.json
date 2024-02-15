@@ -1,7 +1,7 @@
 {
   "name": "@phantomstudios/ft-lib",
   "description": "A collection of Javascript UI & tracking utils for FT sites",
-  "version": "0.3.0-rc4",
+  "version": "0.3.0-rc5",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "homepage": "https://github.com/phantomstudios/ft-lib#readme",
