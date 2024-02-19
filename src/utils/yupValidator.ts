@@ -127,7 +127,11 @@ const origamiEventSchema = object({
 export type ConfigType = InferType<typeof configSchema>;
 export type OrigamiEventType = InferType<typeof origamiEventSchema>;
 
-export const parseConfig = (config: ConfigType): ConfigType => {
+export const parseConfig = (
+  config: ConfigType,
+  disableAppFormatTransform: boolean
+): ConfigType => {
+  disableAppFormatTransformValue = disableAppFormatTransform;
   try {
     //Replace app value based on deprecated hasVideo field and then remove hasVideo
     if (config.hasVideo && config.app.toLowerCase() === "article") {
