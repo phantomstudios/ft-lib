@@ -20,7 +20,7 @@ export class oTracker {
 
   constructor(config: ConfigType, options: TrackingOptions) {
     this._config = parseConfig(config);
-    validateConfig(this._config);
+    validateConfig(this._config, options.disableAppFormatTransform || false);
     this._config.source_id = oTracking.getRootID();
     this.options = options;
 

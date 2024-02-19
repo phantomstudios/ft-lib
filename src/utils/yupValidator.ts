@@ -8,7 +8,7 @@ import {
   ValidationError,
 } from "yup";
 
-let appFormatTransformValue: boolean | undefined = true;
+let disableAppFormatTransformValue = false;
 
 //transform passed values to first character uppercase and replace spaces with underscores
 const unifyValuesTransform = (value: string, ifTransform = true) => {
@@ -53,7 +53,9 @@ const configSchema = object({
   app: string()
     .required()
     .defined()
-    .transform((value) => unifyValuesTransform(value, appFormatTransformValue))
+    .transform((value) =>
+      unifyValuesTransform(value, disableAppFormatTransformValue)
+    )
     .oneOf([
       "Stream",
       "Article",
@@ -148,9 +150,9 @@ export const parseConfig = (config: ConfigType): ConfigType => {
 
 export const validateConfig = (
   config: ConfigType,
-  appFormatTransform: boolean | undefined
+  disableAppFormatTransform: boolean
 ): ValidationError[] | undefined => {
-  appFormatTransformValue = appFormatTransform;
+  disableAppFormatTransformValue = disableAppFormatTransform;
   try {
     configSchema.validateSync(config, {
       strict: false,
