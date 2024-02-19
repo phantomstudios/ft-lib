@@ -11,8 +11,8 @@ import {
 let disableAppFormatTransformValue = false;
 
 //transform passed values to first character uppercase and replace spaces with underscores
-const unifyValuesTransform = (value: string, ifTransform = true) => {
-  if (!ifTransform) return value;
+const unifyValuesTransform = (value: string, disableTransform = false) => {
+  if (disableTransform) return value;
   return (
     value.trim().charAt(0).toUpperCase() +
     value.trim().slice(1).toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
