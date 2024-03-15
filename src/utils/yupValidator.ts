@@ -8,8 +8,11 @@ import {
   ValidationError,
 } from "yup";
 
+let appFormatTransformValue: boolean | undefined = true;
+
 //transform passed values to first character uppercase and replace spaces with underscores
-const unifyValuesTransform = (value: string) => {
+const unifyValuesTransform = (value: string, ifTransform = true) => {
+  if (!ifTransform) return value;
   return (
     value.trim().charAt(0).toUpperCase() +
     value.trim().slice(1).toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
@@ -50,7 +53,7 @@ const configSchema = object({
   app: string()
     .required()
     .defined()
-    .transform(unifyValuesTransform)
+    .transform((value) => unifyValuesTransform(value, appFormatTransformValue))
     .oneOf([
       "Stream",
       "Article",
@@ -62,14 +65,14 @@ const configSchema = object({
       "Infographic",
       "Interactive_infographic",
       "Photo_essay",
-      "Home_page",
-      "Capabilities",
-      "My_products",
-      "Audience",
-      "Case_studies",
-      "Markets",
-      "News_and_insights",
-      "Other",
+      "home-page",
+      "capabilities",
+      "my-products",
+      "audience",
+      "case-studies",
+      "markets",
+      "news-and-insights",
+      "other",
     ]),
   publishDate: string().nullable().default(""),
   isBranded: boolean().defined(),
@@ -144,8 +147,10 @@ export const parseConfig = (config: ConfigType): ConfigType => {
 };
 
 export const validateConfig = (
-  config: ConfigType
+  config: ConfigType,
+  appFormatTransform: boolean | undefined
 ): ValidationError[] | undefined => {
+  appFormatTransformValue = appFormatTransform;
   try {
     configSchema.validateSync(config, {
       strict: false,
