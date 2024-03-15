@@ -8,8 +8,11 @@ import {
   ValidationError,
 } from "yup";
 
+let disableAppFormatTransformValue = false;
+
 //transform passed values to first character uppercase and replace spaces with underscores
-const unifyValuesTransform = (value: string) => {
+const unifyValuesTransform = (value: string, disableTransform = false) => {
+  if (disableTransform) return value;
   return (
     value.trim().charAt(0).toUpperCase() +
     value.trim().slice(1).toLowerCase().replace(/ /g, "_").replace(/-/g, "_")
@@ -50,7 +53,9 @@ const configSchema = object({
   app: string()
     .required()
     .defined()
-    .transform(unifyValuesTransform)
+    .transform((value) =>
+      unifyValuesTransform(value, disableAppFormatTransformValue)
+    )
     .oneOf([
       "Stream",
       "Article",
@@ -62,14 +67,14 @@ const configSchema = object({
       "Infographic",
       "Interactive_infographic",
       "Photo_essay",
-      "Home_page",
-      "Capabilities",
-      "My_products",
-      "Audience",
-      "Case_studies",
-      "Markets",
-      "News_and_insights",
-      "Other",
+      "home-page",
+      "capabilities",
+      "my-products",
+      "audience",
+      "case-studies",
+      "markets",
+      "news-and-insights",
+      "other",
     ]),
   publishDate: string().nullable().default(""),
   isBranded: boolean().defined(),
@@ -122,7 +127,11 @@ const origamiEventSchema = object({
 export type ConfigType = InferType<typeof configSchema>;
 export type OrigamiEventType = InferType<typeof origamiEventSchema>;
 
-export const parseConfig = (config: ConfigType): ConfigType => {
+export const parseConfig = (
+  config: ConfigType,
+  disableAppFormatTransform: boolean
+): ConfigType => {
+  disableAppFormatTransformValue = disableAppFormatTransform;
   try {
     //Replace app value based on deprecated hasVideo field and then remove hasVideo
     if (config.hasVideo && config.app.toLowerCase() === "article") {
@@ -144,8 +153,10 @@ export const parseConfig = (config: ConfigType): ConfigType => {
 };
 
 export const validateConfig = (
-  config: ConfigType
+  config: ConfigType,
+  disableAppFormatTransform: boolean
 ): ValidationError[] | undefined => {
+  disableAppFormatTransformValue = disableAppFormatTransform;
   try {
     configSchema.validateSync(config, {
       strict: false,

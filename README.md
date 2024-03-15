@@ -39,6 +39,7 @@ The constructor requires the config JSON object (TODO - schema) and optionally a
 ```
   scrollTrackerSelector: "#o_tracker_scroll",  //top level DOM element selector for scroll tracking
   isCustomGTMEvent: true, //selects between GTM and UA(GTAG) event formats - TODO - handle automatically by detecting loaded GTM/UA?
+  disableAppFormatTransform: false, //by default the config.app variable is formatted, ie: "app": "home-page" -> "app": "Home_page" - set to true to disable this formatting
 
 ```
 
