@@ -12,6 +12,7 @@ export interface TrackingOptions {
   scrollTrackerSelector?: string;
   isCustomGTMEvent?: boolean;
   sendGTMPageViewYN?: boolean;
+  sendBrandedContent?: boolean;
   disableAppFormatTransform?: boolean;
 }
 
@@ -19,6 +20,7 @@ const DEFAULT_OPTIONS = {
   scrollTrackerSelector: "#o_tracker_scroll",
   isCustomGTMEvent: true,
   sendGTMPageViewYN: true,
+  sendBrandedContent: true,
 };
 
 export class FTTracking {
@@ -68,7 +70,9 @@ export class FTTracking {
     validateConfig(config, this.disableAppFormatTransform);
     this.oTracker.config = config;
     this.oTracker.broadcastPageView();
-    this.oTracker.broadcastBrandedContent();
+    if (this.options.sendBrandedContent) {
+      this.oTracker.broadcastBrandedContent();
+    }
     this.scrollTracker.reset();
     if (this.options.sendGTMPageViewYN) {
       this.gaTracker.GTMVirtualPageView(this.config.url, this.config.title);

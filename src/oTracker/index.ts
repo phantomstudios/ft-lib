@@ -46,7 +46,9 @@ export class oTracker {
     //document.dispatchEvent(new CustomEvent("o.DOMContentLoaded"));  //TODO this isnt needed on next and breaks the cookie-message eventhandlers - is it needed for the server sites?
     //send page hits
     this.broadcastPageView();
-    this.broadcastBrandedContent();
+    if (options.sendBrandedContent) {
+      this.broadcastBrandedContent();
+    }
   }
 
   set config(c: ConfigType) {
