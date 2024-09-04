@@ -135,7 +135,7 @@ export const parseConfig = (
   try {
     //Replace app value based on deprecated hasVideo field and then remove hasVideo
     if (config.hasVideo && config.app.toLowerCase() === "article") {
-      config.app === "Article_with_video";
+      config.app = "Article_with_video";
     }
 
     delete config.hasVideo;
