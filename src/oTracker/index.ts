@@ -23,7 +23,11 @@ export class oTracker {
       config,
       options.disableAppFormatTransform || false
     );
-    validateConfig(this._config, options.disableAppFormatTransform || false);
+    validateConfig(
+      this._config,
+      options.disableAppFormatTransform || false,
+      options.logValidationErrors || false
+    );
     this._config.source_id = oTracking.getRootID();
     this.options = options;
 

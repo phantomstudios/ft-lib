@@ -14,6 +14,7 @@ export interface TrackingOptions {
   sendGTMPageViewYN?: boolean;
   sendBrandedContent?: boolean;
   disableAppFormatTransform?: boolean;
+  logValidationErrors?: boolean;
 }
 
 const DEFAULT_OPTIONS = {
@@ -30,6 +31,7 @@ export class FTTracking {
   gaTracker: gaTracker;
   scrollTracker: ScrollTracker;
   disableAppFormatTransform: boolean;
+  logValidationErrors: boolean;
   oEvent: (detail: OrigamiEventType) => void;
   gaEvent: (category: string, action: string, label: string) => void;
   gtmEvent: (category: string, action: string, label: string) => void;
@@ -40,6 +42,7 @@ export class FTTracking {
     this.gaTracker = new gaTracker(this.options);
     this.disableAppFormatTransform =
       this.options.disableAppFormatTransform || false;
+    this.logValidationErrors = this.options.logValidationErrors || false;
 
     this.oEvent = this.oTracker.eventDispatcher;
     this.gaEvent = this.options.isCustomGTMEvent
@@ -67,7 +70,11 @@ export class FTTracking {
 
   public newPageView(config: ConfigType) {
     //Update passed config to otracker,send pageview events and reset scrollTracker
-    validateConfig(config, this.disableAppFormatTransform);
+    validateConfig(
+      config,
+      this.disableAppFormatTransform,
+      this.logValidationErrors
+    );
     this.oTracker.config = config;
     this.oTracker.broadcastPageView();
     if (this.options.sendBrandedContent) {
