@@ -146,7 +146,7 @@ export const parseConfig = (
     return configSchema.cast(config);
   } catch (err: any) {
     err.errors?.map((err: Error) => {
-      console.error("FTTracker - config cast error: " + err);
+      console.info("FTTracker - config cast error: " + err);
     });
     return config;
   }
@@ -154,7 +154,8 @@ export const parseConfig = (
 
 export const validateConfig = (
   config: ConfigType,
-  disableAppFormatTransform: boolean
+  disableAppFormatTransform: boolean,
+  logValidationErrors: boolean
 ): ValidationError[] | undefined => {
   disableAppFormatTransformValue = disableAppFormatTransform;
   try {
@@ -163,9 +164,11 @@ export const validateConfig = (
       abortEarly: false,
     });
   } catch (err: any) {
-    err.errors?.map((err: ValidationError) => {
-      console.error("FTTracker - config validation error: " + err);
-    });
+    if (logValidationErrors) {
+      err.errors?.map((err: ValidationError) => {
+        console.info("FTTracker - config validation error: " + err);
+      });
+    }
   }
   return undefined;
 };
@@ -181,7 +184,7 @@ export const validateOrigamiEvent = (
     });
   } catch (err: any) {
     err.errors?.map((err: ValidationError) => {
-      console.error("FTTracker - Origami event validation error: " + err);
+      console.info("FTTracker - Origami event validation error: " + err);
     });
   }
   return undefined;
