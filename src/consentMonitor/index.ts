@@ -1,5 +1,5 @@
 import Debug from "debug";
-const debug = Debug("@phntms/ft-lib");
+const debug = Debug("@phantomstudios/ft-lib");
 
 const DEFAULT_DEV_HOSTS = ["localhost", "phq", ".app", "preview"];
 

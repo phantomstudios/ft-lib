@@ -1,5 +1,5 @@
 import Debug from "debug";
-const debug = Debug("@phntms/ft-lib");
+const debug = Debug("@phantomstudios/ft-lib");
 export class permutiveVideoUtils {
   protected progressPermutiveMilestones: number[] = [0, 0.25, 0.5, 0.75, 1];
   protected _campaign: string;

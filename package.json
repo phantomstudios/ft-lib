@@ -33,7 +33,7 @@
     "fix:format": "prettier \"**/*.{md,html,yaml,yml}\" --write",
     "depcheck": "npx npm-check --update"
   },
-  "author": "Dhia Shakiry (dhia@phntms.com)",
+  "author": "Dhia Shakiry (dhia@phantom.agency)",
   "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.14.2",

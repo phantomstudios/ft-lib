@@ -3,7 +3,7 @@ import Debug from "debug";
 import { FTTracking } from "../FTTracking";
 import { permutiveVideoUtils } from "../permutiveVideoUtils";
 import { OrigamiEventType } from "../utils/yupValidator";
-const debug = Debug("@phntms/ft-lib");
+const debug = Debug("@phantomstudios/ft-lib");
 interface PlayerProgressEvent {
   played: number;
   loaded: number;
