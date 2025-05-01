@@ -17,7 +17,7 @@ export class ytIframeTracking {
     this.videoUrl = videoUrl;
     this.permutiveUtils = new permutiveVideoUtils(
       this.FTTracker.config.campaign,
-      this.videoTitle
+      this.videoTitle,
     );
   }
 
@@ -27,13 +27,13 @@ export class ytIframeTracking {
   emitProgressEvents = (
     progress: number,
     duration: number,
-    isYoutube: boolean
+    isYoutube: boolean,
   ) => {
     while (progress >= this.progressMilestones[0]) {
       this.FTTracker.gaEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `${this.progressMilestones[0]}% watched`,
-        this.videoTitle
+        this.videoTitle,
       );
       if (isYoutube) {
         this.FTTracker.oEvent({
@@ -103,7 +103,7 @@ export class ytIframeTracking {
       this.permutiveUtils.emitPermutiveProgressEvent(
         duration - 1,
         currentTime,
-        this.videoProgressInterval
+        this.videoProgressInterval,
       );
       const progress = this.progressPercentage(duration, currentTime);
       this.emitProgressEvents(progress, duration, true);
@@ -115,7 +115,7 @@ export class ytIframeTracking {
       this.FTTracker.gaEvent(
         `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
         `playing`,
-        this.videoTitle
+        this.videoTitle,
       );
       this.FTTracker.oEvent({
         category: "video",
@@ -131,7 +131,7 @@ export class ytIframeTracking {
     this.FTTracker.gaEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
       `pause`,
-      `${this.videoTitle}`
+      `${this.videoTitle}`,
     );
     this.FTTracker.oEvent({
       category: "video",
@@ -146,7 +146,7 @@ export class ytIframeTracking {
     this.FTTracker.gaEvent(
       `Video${window.isOvideoPlayer ? ":fallback" : ""}`,
       `100% watched`,
-      `${this.videoTitle}`
+      `${this.videoTitle}`,
     );
     this.FTTracker.oEvent({
       category: "video",
@@ -159,7 +159,7 @@ export class ytIframeTracking {
       this.permutiveUtils.emitPermutiveProgressEvent(
         currentTime,
         currentTime,
-        this.videoProgressInterval
+        this.videoProgressInterval,
       );
     }
   }
@@ -172,7 +172,7 @@ export class ytIframeTracking {
       this.permutiveUtils.emitPermutiveProgressEvent(
         duration - 1,
         currentTime,
-        this.videoProgressInterval
+        this.videoProgressInterval,
       );
     }, 1000);
     const progress = this.progressPercentage(duration, currentTime);

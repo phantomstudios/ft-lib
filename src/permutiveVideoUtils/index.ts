@@ -26,7 +26,7 @@ export class permutiveVideoUtils {
   emitPermutiveProgressEvent = (
     duration: number,
     currentTime: number,
-    interval: any = undefined
+    interval: any = undefined,
   ) => {
     const progress = currentTime / (Math.floor(duration) - 1);
 

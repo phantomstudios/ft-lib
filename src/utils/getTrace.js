@@ -53,7 +53,7 @@ const getDomPathProps = (attrs, props) => {
   // Collect any attribute that matches given strings.
   attrs
     .filter((attribute) =>
-      attribute.name.match(/^data-trackable|^data-o-|^aria-/i)
+      attribute.name.match(/^data-trackable|^data-o-|^aria-/i),
     )
     .forEach((attribute) => {
       props[attribute.name] = attribute.value;
@@ -104,7 +104,7 @@ function getTrace(el) {
     if (domPathProps["data-trackable"]) {
       domPathProps = Object.assign(
         domPathProps,
-        getSiblingsAndPosition(el, originalEl, selector)
+        getSiblingsAndPosition(el, originalEl, selector),
       );
     }
 

@@ -18,6 +18,10 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([{
+    ignores: [
+        "src/utils/intersectionObserverPolyfill.js",
+    ],
+
     extends: fixupConfigRules(compat.extends(
         "plugin:react/recommended",
         "plugin:react-hooks/recommended",

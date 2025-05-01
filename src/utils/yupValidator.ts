@@ -54,7 +54,7 @@ const configSchema = object({
     .required()
     .defined()
     .transform((value) =>
-      unifyValuesTransform(value, disableAppFormatTransformValue)
+      unifyValuesTransform(value, disableAppFormatTransformValue),
     )
     .oneOf([
       "Stream",
@@ -129,7 +129,7 @@ export type OrigamiEventType = InferType<typeof origamiEventSchema>;
 
 export const parseConfig = (
   config: ConfigType,
-  disableAppFormatTransform: boolean
+  disableAppFormatTransform: boolean,
 ): ConfigType => {
   disableAppFormatTransformValue = disableAppFormatTransform;
   try {
@@ -155,7 +155,7 @@ export const parseConfig = (
 export const validateConfig = (
   config: ConfigType,
   disableAppFormatTransform: boolean,
-  logValidationErrors: boolean
+  logValidationErrors: boolean,
 ): ValidationError[] | undefined => {
   disableAppFormatTransformValue = disableAppFormatTransform;
   try {
@@ -174,7 +174,7 @@ export const validateConfig = (
 };
 
 export const validateOrigamiEvent = (
-  config: OrigamiEventType
+  config: OrigamiEventType,
 ): ValidationError[] | undefined => {
   try {
     const parsedConfig = origamiEventSchema.cast(config);

@@ -21,12 +21,12 @@ export class oTracker {
   constructor(config: ConfigType, options: TrackingOptions) {
     this._config = parseConfig(
       config,
-      options.disableAppFormatTransform || false
+      options.disableAppFormatTransform || false,
     );
     validateConfig(
       this._config,
       options.disableAppFormatTransform || false,
-      options.logValidationErrors || false
+      options.logValidationErrors || false,
     );
     this._config.source_id = oTracking.getRootID();
     this.options = options;
@@ -68,7 +68,7 @@ export class oTracker {
       detail.app = this.config.app;
       detail.product = this.config.product;
       document.body.dispatchEvent(
-        new CustomEvent("oTracking.event", { detail, bubbles: true })
+        new CustomEvent("oTracking.event", { detail, bubbles: true }),
       );
     } else {
       throw "Invalid event type";
@@ -92,7 +92,7 @@ export class oTracker {
           category: "brandedContent",
         },
         bubbles: true,
-      })
+      }),
     );
   }
 
@@ -104,7 +104,7 @@ export class oTracker {
           (elm) =>
             elm instanceof HTMLElement &&
             elm.hasAttribute &&
-            elm.hasAttribute("data-o-event")
+            elm.hasAttribute("data-o-event"),
         );
       if (trackableElement && trackableElement instanceof HTMLElement) {
         const data = trackableElement.getAttribute("data-o-event");

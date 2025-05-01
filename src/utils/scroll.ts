@@ -56,7 +56,7 @@ export class ScrollTracker {
 
   intersectionCallback(
     observer: IntersectionObserver,
-    changes: IntersectionObserverEntry[]
+    changes: IntersectionObserverEntry[],
   ) {
     changes.forEach((change) => {
       if (change.isIntersecting || change.intersectionRatio > 0) {
@@ -81,7 +81,7 @@ export class ScrollTracker {
           this.gaTracker.GtagEventDispatcher(
             "Scroll",
             `scroll - ${percentagesViewed}%`,
-            window.location.pathname
+            window.location.pathname,
           );
         }
 
