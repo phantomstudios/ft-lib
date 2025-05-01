@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { consentMonitor } from "../src/consentMonitor";
 import { permutiveVideoUtils } from "../src/permutiveVideoUtils";
 
