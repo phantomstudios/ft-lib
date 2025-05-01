@@ -112,14 +112,14 @@ const origamiEventSchema = object({
     .nullable()
     .notRequired()
     .when("category", {
-      is: "video" || "audio",
+      is: (value: string) => value === "video" || "audio",
       then: () => number().required(),
     }),
   progress: number()
     .nullable()
     .notRequired()
     .when("category", {
-      is: "video" || "audio",
+      is: (value: string) => value === "video" || "audio",
       then: () => number().required(),
     }),
 });
