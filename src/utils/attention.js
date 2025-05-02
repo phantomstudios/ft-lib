@@ -31,13 +31,13 @@ export class Attention {
     //Add events for all the other Attention events
     for (let i = 0; i < ATTENTION_EVENTS.length; i++) {
       window.addEventListener(ATTENTION_EVENTS[i], (ev) =>
-        this.startAttention(ev)
+        this.startAttention(ev),
       );
     }
 
     for (let i = 0; i < UNATTENTION_EVENTS.length; i++) {
       window.addEventListener(UNATTENTION_EVENTS[i], (ev) =>
-        this.endAttention(ev)
+        this.endAttention(ev),
       );
     }
 
@@ -46,7 +46,7 @@ export class Attention {
     document.body.addEventListener(
       "oViewport.visibility",
       (ev) => this.handleVisibilityChange(ev),
-      false
+      false,
     );
 
     this.addVideoEvents();
@@ -79,14 +79,14 @@ export class Attention {
     }
     this.attentionTimeout = setTimeout(
       () => this.endAttention(),
-      ATTENTION_INTERVAL
+      ATTENTION_INTERVAL,
     );
   }
 
   startConstantAttention() {
     this.constantAttentionInterval = setInterval(
       () => this.startAttention(),
-      ATTENTION_INTERVAL
+      ATTENTION_INTERVAL,
     );
   }
 
@@ -99,7 +99,7 @@ export class Attention {
     if (this.startAttentionTime) {
       this.endAttentionTime = new Date().getTime();
       this.totalAttentionTime += Math.round(
-        (this.endAttentionTime - this.startAttentionTime) / 1000
+        (this.endAttentionTime - this.startAttentionTime) / 1000,
       );
       clearTimeout(this.attentionTimeout);
       this.startAttentionTime = null;
@@ -117,13 +117,13 @@ export class Attention {
     this.videoPlayers = document.getElementsByTagName("video");
     for (let i = 0; i < this.videoPlayers.length; i++) {
       this.videoPlayers[i].addEventListener("playing", (ev) =>
-        this.startConstantAttention(ev)
+        this.startConstantAttention(ev),
       );
       this.videoPlayers[i].addEventListener("pause", (ev) =>
-        this.endConstantAttention(ev)
+        this.endConstantAttention(ev),
       );
       this.videoPlayers[i].addEventListener("ended", (ev) =>
-        this.endConstantAttention(ev)
+        this.endConstantAttention(ev),
       );
     }
   }

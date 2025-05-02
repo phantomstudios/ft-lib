@@ -73,7 +73,7 @@ export class FTTracking {
     validateConfig(
       config,
       this.disableAppFormatTransform,
-      this.logValidationErrors
+      this.logValidationErrors,
     );
     this.oTracker.config = config;
     this.oTracker.broadcastPageView();

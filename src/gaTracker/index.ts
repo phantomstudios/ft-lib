@@ -55,13 +55,13 @@ export class gaTracker {
           this.GTMEventDispatcher(
             category,
             action,
-            label || window.location.pathname //use pathname if label section has not been defined
+            label || window.location.pathname, //use pathname if label section has not been defined
           );
         } else {
           this.GtagEventDispatcher(
             category,
             action,
-            label || window.location.pathname
+            label || window.location.pathname,
           );
         }
       }
@@ -70,7 +70,7 @@ export class gaTracker {
 
   setUpFTNavigationLinksTracking() {
     const FTNavigationLinks = Array.from(
-      document.querySelectorAll(".o-header__drawer-menu-link")
+      document.querySelectorAll(".o-header__drawer-menu-link"),
     );
     if (FTNavigationLinks) {
       FTNavigationLinks.map((navLink) => {
@@ -119,7 +119,7 @@ export class gaTracker {
 
   setupFooterLinksTracking() {
     const FTFooterLinks = Array.from(
-      document.querySelectorAll(".o-footer__legal-links li a")
+      document.querySelectorAll(".o-footer__legal-links li a"),
     );
     if (FTFooterLinks) {
       FTFooterLinks.forEach((footerLink) => {

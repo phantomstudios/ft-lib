@@ -50,7 +50,7 @@ export class consentMonitor {
     //Simulate cookie consent behaviour in non-prod environments
     this._devHosts.map(
       (devHost) =>
-        this._hostname.includes(devHost) && this.setDevCookieHandler()
+        this._hostname.includes(devHost) && this.setDevCookieHandler(),
     );
   };
 
@@ -67,7 +67,7 @@ export class consentMonitor {
         this._isInitialized = true;
       } else if (
         this.getCookieValue("FTConsent").includes(
-          "behaviouraladsOnsite%3Aon"
+          "behaviouraladsOnsite%3Aon",
         ) &&
         !this.consent
       ) {
@@ -75,7 +75,7 @@ export class consentMonitor {
         this.permutiveConsentOn();
       } else if (
         !this.getCookieValue("FTConsent").includes(
-          "behaviouraladsOnsite%3Aon"
+          "behaviouraladsOnsite%3Aon",
         ) &&
         this.consent
       ) {
@@ -98,7 +98,7 @@ export class consentMonitor {
         oCookieMessage.removeEventListener(
           "oCookieMessage.act",
           onCookieMessageAct,
-          false
+          false,
         );
       };
       oCookieMessage.addEventListener("oCookieMessage.act", onCookieMessageAct);

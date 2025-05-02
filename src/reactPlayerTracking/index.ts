@@ -31,7 +31,7 @@ export class reactPlayerTracking {
     this.permutiveTracker = new permutiveVideoUtils(
       this.FTTracker.config.campaign,
       this.videoTitle,
-      this.videoUrl
+      this.videoUrl,
     );
   }
 
@@ -79,7 +79,7 @@ export class reactPlayerTracking {
     this.playedSeconds = reactPlayerProgress.playedSeconds;
     if (this.duration > 0) {
       this.playedPercent = Math.floor(
-        (Math.ceil(reactPlayerProgress.playedSeconds) / this.duration) * 100
+        (Math.ceil(reactPlayerProgress.playedSeconds) / this.duration) * 100,
       );
     }
 
@@ -99,7 +99,7 @@ export class reactPlayerTracking {
     debug("edit permutive progress event- " + this.playedSeconds);
     this.permutiveTracker?.emitPermutiveProgressEvent(
       this.duration,
-      this.playedSeconds
+      this.playedSeconds,
     );
   };
 }
