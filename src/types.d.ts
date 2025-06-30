@@ -1,7 +1,20 @@
 declare module "@financial-times/o-tracking";
 declare module "@financial-times/o-viewport";
 
+interface ConsentOptions {
+  opt_in?: boolean;
+  token?: string;
+}
+interface SourcepointCmpAPI {
+  queue?: Array<() => void>;
+  addEventListener?: (
+    eventName: string,
+
+    callback: (...args: any[]) => void,
+  ) => void;
+}
 interface Window {
+  _sp_: SourcepointCmpAPI;
   dataLayer: any;
   gtag: any;
   permutive: {
@@ -11,11 +24,6 @@ interface Window {
   };
   gtmCategory?: string; //channels only
   isOvideoPlayer?: boolean; //channels only
-}
-
-interface ConsentOptions {
-  opt_in?: boolean;
-  token?: string;
 }
 
 interface CallableConsent {

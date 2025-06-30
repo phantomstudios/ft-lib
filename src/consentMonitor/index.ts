@@ -1,120 +1,112 @@
 import Debug from "debug";
-const debug = Debug("@phantomstudios/ft-lib");
+
+import { enqueueCmpCallback, loadFtCmpScript } from "../cmp/loadFtCmp";
+
+const debug = Debug("@phantomstudios/ft-lib/consentMonitor");
 
 const DEFAULT_DEV_HOSTS = ["localhost", "phq", ".app", "preview"];
 
-export class consentMonitor {
-  protected _consent = false;
-  protected _devHosts: string[];
-  protected _isDevEnvironment = false;
-  protected _hostname: string;
-  protected _isInitialized = false;
+interface ConsentReadyInfo {
+  consentedToAll: boolean;
+}
+type ConsentReadyHandler = (
+  legislation: string,
+  uuid: string,
+  tcData: unknown,
+  info: ConsentReadyInfo,
+) => void;
+type MessageChoiceHandler = (
+  legislation: string,
+  choiceId: number,
+  choiceTypeId: number,
+) => void;
 
-  constructor(hostname?: string, devHosts?: string[] | string) {
-    if (Array.isArray(devHosts)) {
-      this._devHosts = devHosts.concat(DEFAULT_DEV_HOSTS);
-    } else if (devHosts === undefined) {
-      this._devHosts = DEFAULT_DEV_HOSTS;
-    } else {
-      this._devHosts = DEFAULT_DEV_HOSTS;
-      this._devHosts.push(devHosts);
-    }
+const CMP_CHOICE_ACCEPT_ALL = 11;
+const CMP_CHOICE_REJECT_ALL = 13;
 
-    this._hostname = hostname || window.location.hostname;
-    this.init();
-  }
+export class ConsentMonitor {
+  private _consent = false;
+  private _devHosts: string[];
+  private _isDevEnvironment = false;
+  private _isInitialized = false;
 
-  get consent(): boolean {
+  public get consent(): boolean {
     return this._consent;
   }
-
-  get devHosts(): string[] | string {
+  public get devHosts(): string[] {
     return this._devHosts;
   }
-
-  get isDevEnvironment(): boolean {
+  public get isDevEnvironment(): boolean {
     return this._isDevEnvironment;
   }
-
-  get isInitialized(): boolean {
+  public get isInitialized(): boolean {
     return this._isInitialized;
   }
 
-  getCookieValue = (name: string) =>
-    document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
+  public get userHasConsented(): boolean {
+    return this._consent;
+  }
 
-  init = () => {
-    this.cookieConsentTest();
-    setInterval(this.cookieConsentTest, 3000);
+  constructor(hostname?: string, devHosts?: string[] | string) {
+    if (Array.isArray(devHosts)) {
+      this._devHosts = [...devHosts, ...DEFAULT_DEV_HOSTS];
+    } else if (devHosts === undefined) {
+      this._devHosts = [...DEFAULT_DEV_HOSTS];
+    } else {
+      this._devHosts = [...DEFAULT_DEV_HOSTS, devHosts];
+    }
 
-    //Simulate cookie consent behaviour in non-prod environments
-    this._devHosts.map(
-      (devHost) =>
-        this._hostname.includes(devHost) && this.setDevCookieHandler(),
+    const hostToCheck = hostname ?? window.location.hostname;
+    this._isDevEnvironment = this._devHosts.some((h) =>
+      hostToCheck.includes(h),
     );
-  };
 
-  cookieConsentTest = () => {
-    if (window.permutive) {
-      if (!this._isInitialized) {
-        if (
-          this.getCookieValue("FTConsent").includes("behaviouraladsOnsite%3Aon")
-        ) {
-          this.permutiveConsentOn();
-        } else {
-          this.permutiveConsentOff();
-        }
+    loadFtCmpScript()
+      .then(() => {
+        this.attachCmpListeners();
         this._isInitialized = true;
-      } else if (
-        this.getCookieValue("FTConsent").includes(
-          "behaviouraladsOnsite%3Aon",
-        ) &&
-        !this.consent
-      ) {
-        debug("setting permutive tracking consent: on");
-        this.permutiveConsentOn();
-      } else if (
-        !this.getCookieValue("FTConsent").includes(
-          "behaviouraladsOnsite%3Aon",
-        ) &&
-        this.consent
-      ) {
-        debug("setting permutive tracking consent: off");
-        this.permutiveConsentOff();
-      }
-    }
-  };
+      })
+      .catch((err) => console.error(err));
+  }
 
-  setDevCookieHandler = () => {
-    this._isDevEnvironment = true;
-    debug("setting development environment from host match");
-    const oCookieMessage =
-      document.getElementsByClassName("o-cookie-message")[0];
-    if (oCookieMessage) {
-      const onCookieMessageAct = () => {
-        debug("setting development FT consent cookies");
-        document.cookie = "FTConsent=behaviouraladsOnsite%3Aon";
-        document.cookie = "FTCookieConsentGDPR=true";
-        oCookieMessage.removeEventListener(
-          "oCookieMessage.act",
-          onCookieMessageAct,
-          false,
-        );
+  private attachCmpListeners(): void {
+    enqueueCmpCallback(() => {
+      const onReady: ConsentReadyHandler = (_l, _u, _t, info) => {
+        debug("onConsentReady:", info);
+        if (info.consentedToAll) {
+          this.enablePermutive();
+        } else {
+          this.disablePermutive();
+        }
       };
-      oCookieMessage.addEventListener("oCookieMessage.act", onCookieMessageAct);
-    }
-  };
 
-  permutiveConsentOn = () => {
-    window.permutive.consent({
+      const onChoice: MessageChoiceHandler = (_l, _c, typeId) => {
+        debug("onMessageChoiceSelect:", typeId);
+        if (typeId === CMP_CHOICE_ACCEPT_ALL) this.enablePermutive();
+        else if (typeId === CMP_CHOICE_REJECT_ALL) this.disablePermutive();
+      };
+
+      window._sp_.addEventListener?.("onConsentReady", onReady);
+      window._sp_.addEventListener?.("onMessageChoiceSelect", onChoice);
+    });
+  }
+
+  private enablePermutive(): void {
+    if (this._consent) return;
+    debug("Permutive consent: ON");
+    window.permutive?.consent({
       opt_in: true,
       token: "behaviouraladsOnsite:on",
     });
     this._consent = true;
-  };
+  }
 
-  permutiveConsentOff = () => {
-    window.permutive.consent({ opt_in: false });
+  private disablePermutive(): void {
+    if (!this._consent) return;
+    debug("Permutive consent: OFF");
+    window.permutive?.consent({ opt_in: false });
     this._consent = false;
-  };
+  }
 }
+
+export { ConsentMonitor as consentMonitor };
