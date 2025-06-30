@@ -1,7 +1,7 @@
 import { FTTracking, TrackingOptions } from "./FTTracking";
 import { ConfigType, OrigamiEventType } from "./utils/yupValidator";
 
-export { consentMonitor } from "./consentMonitor";
+export { ConsentMonitor as consentMonitor } from "./consentMonitor";
 export { permutiveVideoUtils } from "./permutiveVideoUtils";
 export { reactPlayerTracking } from "./reactPlayerTracking";
 export { gaTracker } from "./gaTracker";

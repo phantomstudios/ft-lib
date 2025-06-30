@@ -1,4 +1,4 @@
-import { consentMonitor } from "../consentMonitor";
+import { ConsentMonitor as consentMonitor } from "../consentMonitor";
 import { gaTracker } from "../gaTracker";
 import { oTracker } from "../oTracker";
 import { ScrollTracker } from "../utils/scroll";
