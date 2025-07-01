@@ -9,8 +9,8 @@ export function loadFtCmpScript(): Promise<void> {
     script.async = true;
     script.src = "https://consent-notice.ft.com/cmp.js";
     script.referrerPolicy = window.location.hostname.endsWith(".ft.com")
-      ? "no-referrer-when-downgrade" // production hosts
-      : "origin"; // localhost / preview
+      ? "" // production hosts
+      : "no-referrer-when-downgrade"; // localhost / preview
 
     script.onload = () => resolve();
     script.onerror = () =>
