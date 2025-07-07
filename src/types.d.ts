@@ -15,6 +15,7 @@ interface SourcepointCmpAPI {
 }
 interface Window {
   _sp_: SourcepointCmpAPI;
+  _sp_queue?: Array<() => void>;
   dataLayer: any;
   gtag: any;
   permutive: {

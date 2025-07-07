@@ -22,7 +22,7 @@ export function loadFtCmpScript(): Promise<void> {
 
 export function enqueueCmpCallback(cb: () => void): void {
   if (!window._sp_) window._sp_ = {};
-  if (!window._sp_.queue) window._sp_.queue = [];
+  if (!window._sp_queue) window._sp_queue = [];
 
-  window._sp_.queue!.push(cb);
+  window._sp_queue!.push(cb);
 }
