@@ -5,6 +5,10 @@ interface ConsentOptions {
   opt_in?: boolean;
   token?: string;
 }
+
+declare module "@financial-times/cmp-client" {
+  export function interceptManageCookiesLinks(): void;
+}
 interface SourcepointCmpAPI {
   queue?: Array<() => void>;
   addEventListener?: (
