@@ -1,4 +1,8 @@
-import { interceptManageCookiesLinks } from "@financial-times/cmp-client";
+import {
+  initSourcepointCmp,
+  interceptManageCookiesLinks,
+  properties,
+} from "@financial-times/cmp-client";
 import Debug from "debug";
 
 import { enqueueCmpCallback, loadFtCmpScript } from "../cmp/loadFtCmp";
@@ -65,6 +69,13 @@ export class ConsentMonitor {
     loadFtCmpScript()
       .then(() => {
         this.attachCmpListeners();
+
+        const propertyConfig = window.location.hostname.endsWith("ft.com")
+          ? properties["FT_DOTCOM_PROD"]
+          : properties["FT_DOTCOM_TEST"];
+
+        // initialize CMP
+        initSourcepointCmp({ propertyConfig });
         // use cmp client lib to intercept footer 'Manage Cookies' links (opens privacy modal)
         // Note, function requires very specific link: text = 'Manage Cookies' and href = 'https://ft.com/preferences/manage-cookies'
         interceptManageCookiesLinks();

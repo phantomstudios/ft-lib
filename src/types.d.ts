@@ -8,6 +8,12 @@ interface ConsentOptions {
 
 declare module "@financial-times/cmp-client" {
   export function interceptManageCookiesLinks(): void;
+  export const properties: {
+    [key: string]: any;
+  };
+  export function initSourcepointCmp(options?: {
+    propertyConfig?: any;
+  }): Promise<void>;
 }
 interface SourcepointCmpAPI {
   queue?: Array<() => void>;
