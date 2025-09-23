@@ -1,7 +1,7 @@
 {
   "name": "@phantomstudios/ft-lib",
   "description": "A collection of Javascript UI & tracking utils for FT sites",
-  "version": "0.5.0-rc9",
+  "version": "0.5.0-rc14",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "homepage": "https://github.com/phantomstudios/ft-lib#readme",
@@ -41,7 +41,7 @@
     "@eslint/compat": "^1.2.9",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.25.1",
-    "@financial-times/cmp-client": "^6.1.2",
+    "@financial-times/cmp-client": "^6.2.0",
     "@financial-times/o-footer": "^9.2.10",
     "@financial-times/o-header": "^11.2.0",
     "@financial-times/o-tracking": "^4.9.0",

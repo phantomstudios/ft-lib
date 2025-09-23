@@ -34,6 +34,7 @@ export class ConsentMonitor {
   private _devHosts: string[];
   private _isDevEnvironment = false;
   private _isInitialized = false;
+  private _hostname: string;
 
   public get consent(): boolean {
     return this._consent;
@@ -52,6 +53,9 @@ export class ConsentMonitor {
     return this._consent;
   }
 
+  getCookieValue = (name: string) =>
+    document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
+
   constructor(hostname?: string, devHosts?: string[] | string) {
     if (Array.isArray(devHosts)) {
       this._devHosts = [...devHosts, ...DEFAULT_DEV_HOSTS];
@@ -61,9 +65,10 @@ export class ConsentMonitor {
       this._devHosts = [...DEFAULT_DEV_HOSTS, devHosts];
     }
 
-    const hostToCheck = hostname ?? window.location.hostname;
+    this._hostname = hostname || window.location.hostname;
+
     this._isDevEnvironment = this._devHosts.some((h) =>
-      hostToCheck.includes(h),
+      this._hostname.includes(h),
     );
 
     loadFtCmpScript()
@@ -99,6 +104,17 @@ export class ConsentMonitor {
         debug("onMessageChoiceSelect:", typeId);
         if (typeId === CMP_CHOICE_ACCEPT_ALL) this.enablePermutive();
         else if (typeId === CMP_CHOICE_REJECT_ALL) this.disablePermutive();
+
+        //Simulate cookie consent behaviour in non-prod environments as banner does not set cookies in non .ft.com domains
+        this._devHosts.map(
+          (devHost) =>
+            this._hostname.includes(devHost) &&
+            typeId === CMP_CHOICE_ACCEPT_ALL &&
+            this.setDevConsentCookies(),
+        );
+
+        // banner updated - check new cookie value to fire consent_update event
+        setTimeout(this.cookieConsentTest, 3000);
       };
 
       window._sp_.addEventListener?.("onConsentReady", onReady);
@@ -122,6 +138,31 @@ export class ConsentMonitor {
     window.permutive?.consent({ opt_in: false });
     this._consent = false;
   }
+
+  //check for FTConsent - cookiesOnSite to trigger custom consent_update event for GTM tags (banner updated)
+  cookieConsentTest = () => {
+    if (!this._isInitialized || !window || !window.dataLayer) return;
+    if (this.getCookieValue("FTConsent").includes("cookiesOnsite%3Aon")) {
+      //send consent_update event
+      window.dataLayer.push({
+        event: "consent_update",
+        consent: true,
+      });
+    } else {
+      window.dataLayer.push({
+        event: "consent_update",
+        consent: false,
+      });
+    }
+  };
+
+  setDevConsentCookies = () => {
+    this._isDevEnvironment = true;
+    debug("setting development FT consent cookies");
+    document.cookie =
+      "FTConsent=behaviouraladsOnsite%3Aon%2CcookiesOnsite%3Aon%2CpermutiveadsOnsite%3Aon";
+    document.cookie = "FTCookieConsentGDPR=true";
+  };
 }
 
 export { ConsentMonitor as consentMonitor };
