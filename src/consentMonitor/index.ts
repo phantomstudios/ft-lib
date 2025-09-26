@@ -75,7 +75,7 @@ export class ConsentMonitor {
       .then(() => {
         this.attachCmpListeners();
 
-        const propertyConfig = window.location.hostname.endsWith("ft.com")
+        const propertyConfig = window.location.hostname.endsWith(".ft.com")
           ? properties["FT_DOTCOM_PROD"]
           : properties["FT_DOTCOM_TEST"];
 
