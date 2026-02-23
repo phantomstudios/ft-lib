@@ -1,11 +1,14 @@
-import { consentMonitor } from "../consentMonitor";
+import {
+  ConsentMonitor,
+  ConsentMonitor as consentMonitor,
+} from "../consentMonitor";
 import { gaTracker } from "../gaTracker";
 import { oTracker } from "../oTracker";
 import { ScrollTracker } from "../utils/scroll";
 import {
-  validateConfig,
   ConfigType,
   OrigamiEventType,
+  validateConfig,
 } from "../utils/yupValidator";
 
 export interface TrackingOptions {
@@ -32,6 +35,7 @@ export class FTTracking {
   scrollTracker: ScrollTracker;
   disableAppFormatTransform: boolean;
   logValidationErrors: boolean;
+  consentMonitor: ConsentMonitor | undefined;
   oEvent: (detail: OrigamiEventType) => void;
   gaEvent: (category: string, action: string, label: string) => void;
   gtmEvent: (category: string, action: string, label: string) => void;
@@ -57,7 +61,10 @@ export class FTTracking {
 
     //cookie consent monitor for permutive tracking
     window.addEventListener("load", () => {
-      new consentMonitor(window.location.hostname, [".app", "preview"]);
+      this.consentMonitor = new consentMonitor(window.location.hostname, [
+        ".app",
+        "preview",
+      ]);
     });
   }
   set config(c: ConfigType) {
@@ -67,6 +74,16 @@ export class FTTracking {
   get config() {
     return this._config;
   }
+
+  initializeConsentMonitor = () => {
+    if (!this.consentMonitor) {
+      this.consentMonitor = new consentMonitor(window.location.hostname, [
+        ".app",
+        "preview",
+      ]);
+    }
+    return this.consentMonitor;
+  };
 
   public newPageView(config: ConfigType) {
     //Update passed config to otracker,send pageview events and reset scrollTracker

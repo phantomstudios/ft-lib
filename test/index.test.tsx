@@ -2,18 +2,11 @@
  * @jest-environment jsdom
  */
 
-import { consentMonitor } from "../src/consentMonitor";
+import * as cmpLoader from "../src/cmp/loadFtCmp";
+import { ConsentMonitor, consentMonitor } from "../src/consentMonitor";
 import { permutiveVideoUtils } from "../src/permutiveVideoUtils";
 
-let windowSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  windowSpy = jest.spyOn(window, "window", "get");
-});
-
-afterEach(() => {
-  windowSpy.mockRestore();
-});
+jest.spyOn(cmpLoader, "loadFtCmpScript").mockResolvedValue(undefined);
 
 describe("consentMonitor", () => {
   it("can be initiated", () => {
@@ -34,30 +27,24 @@ describe("consentMonitor", () => {
     expect(obj.isDevEnvironment).toBe(true);
   });
 
-  it("Initializes correctly", async () => {
-    jest.useFakeTimers();
-    windowSpy.mockImplementation(() => ({
-      permutive: {
-        consent: ({}) => {
-          return {};
-        },
-      },
-    }));
-    const obj = new consentMonitor("https://FT-staging.devhost.com", [
+  it("Initializes correctly and sets the isInitialized flag", async () => {
+    const obj = new ConsentMonitor("https://FT-staging.devhost.com", [
       "localhost",
-      "vercel.app",
       "phq",
       "devhost",
     ]);
+
+    await new Promise(process.nextTick);
     expect(obj.isInitialized).toBe(true);
   });
+
   //TODO - mock document.cookie get/set and test consent value
   describe("Permutive video progress utils", () => {
     it("can be initiated", () => {
       const permutiveVideoTracker = new permutiveVideoUtils(
         "FT-Campaign",
         "video title",
-        "videoID"
+        "videoID",
       );
       expect(permutiveVideoTracker.remainingProgress).toEqual([
         0, 0.25, 0.5, 0.75, 1,
