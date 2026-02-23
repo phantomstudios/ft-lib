@@ -6,17 +6,7 @@ import * as cmpLoader from "../src/cmp/loadFtCmp";
 import { ConsentMonitor, consentMonitor } from "../src/consentMonitor";
 import { permutiveVideoUtils } from "../src/permutiveVideoUtils";
 
-let windowSpy: jest.SpyInstance;
-
 jest.spyOn(cmpLoader, "loadFtCmpScript").mockResolvedValue(undefined);
-
-beforeEach(() => {
-  windowSpy = jest.spyOn(window, "window", "get");
-});
-
-afterEach(() => {
-  windowSpy.mockRestore();
-});
 
 describe("consentMonitor", () => {
   it("can be initiated", () => {
@@ -54,7 +44,7 @@ describe("consentMonitor", () => {
       const permutiveVideoTracker = new permutiveVideoUtils(
         "FT-Campaign",
         "video title",
-        "videoID"
+        "videoID",
       );
       expect(permutiveVideoTracker.remainingProgress).toEqual([
         0, 0.25, 0.5, 0.75, 1,
