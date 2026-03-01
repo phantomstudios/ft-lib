@@ -40,7 +40,7 @@
     "@babel/preset-typescript": "^7.13.0",
     "@eslint/compat": "^1.2.9",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.25.1",
+    "@eslint/js": "^10.0.1",
     "@financial-times/cmp-client": "^6.2.0",
     "@financial-times/o-footer": "^9.2.10",
     "@financial-times/o-header": "^11.2.0",
