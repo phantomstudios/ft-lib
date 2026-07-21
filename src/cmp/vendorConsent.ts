@@ -27,7 +27,6 @@ export interface VendorConsentResults {
   purpose1: boolean;
 }
 
-// 2. Main Implementation Function
 export function initVendorConsentListener(
   onConsentUpdate: (results: VendorConsentResults) => void,
 ): void {

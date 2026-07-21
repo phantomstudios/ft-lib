@@ -104,13 +104,15 @@ export class ConsentMonitor {
 
   // Added for required brandmetrics image pixels and linkedin script consent (CMP specific vendor consents integration)
   private attachVendorConsentListeners(): void {
-    initVendorConsentListener((vendorConsents: VendorConsentResults) => {
-      const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
-        detail: vendorConsents,
-      });
+    enqueueCmpCallback(() => {
+      initVendorConsentListener((vendorConsents: VendorConsentResults) => {
+        const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
+          detail: vendorConsents,
+        });
 
-      window.dispatchEvent(vendorConsentEvent);
-      debug("[CMP Consent lookup Event", vendorConsents);
+        window.dispatchEvent(vendorConsentEvent);
+        debug("[CMP Consent lookup Event", vendorConsents);
+      });
     });
   }
 
@@ -123,6 +125,15 @@ export class ConsentMonitor {
         } else {
           this.disablePermutive();
         }
+
+        initVendorConsentListener((vendorConsents: VendorConsentResults) => {
+          const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
+            detail: vendorConsents,
+          });
+
+          window.dispatchEvent(vendorConsentEvent);
+          debug("[CMP Consent lookup Event", vendorConsents);
+        });
       };
 
       const onChoice: MessageChoiceHandler = (_l, _c, typeId) => {
