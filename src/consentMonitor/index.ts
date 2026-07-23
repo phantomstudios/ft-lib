@@ -6,6 +6,10 @@ import {
 import Debug from "debug";
 
 import { enqueueCmpCallback, loadFtCmpScript } from "../cmp/loadFtCmp";
+import {
+  initVendorConsentListener,
+  VendorConsentResults,
+} from "../cmp/vendorConsent";
 
 const debug = Debug("@phantomstudios/ft-lib/consentMonitor");
 
@@ -35,6 +39,11 @@ export class ConsentMonitor {
   private _isDevEnvironment = false;
   private _isInitialized = false;
   private _hostname: string;
+  private _vendorConsents = {
+    brandmetrics: false,
+    linkedIn: false,
+    purpose1: false,
+  } as VendorConsentResults;
 
   public get consent(): boolean {
     return this._consent;
@@ -48,9 +57,11 @@ export class ConsentMonitor {
   public get isInitialized(): boolean {
     return this._isInitialized;
   }
-
   public get userHasConsented(): boolean {
     return this._consent;
+  }
+  public get vendorConsents(): VendorConsentResults {
+    return this._vendorConsents;
   }
 
   getCookieValue = (name: string) =>
@@ -71,10 +82,12 @@ export class ConsentMonitor {
       this._hostname.includes(h),
     );
 
+    this.attachVendorConsentListeners(); // listen to existing consent data fetch
+    this.attachCmpListeners(); // listen to banner interaction
+
+    // load banner
     loadFtCmpScript()
       .then(() => {
-        this.attachCmpListeners();
-
         const propertyConfig = window.location.hostname.endsWith(".ft.com")
           ? properties["FT_DOTCOM_PROD"]
           : properties["FT_DOTCOM_TEST"];
@@ -89,6 +102,20 @@ export class ConsentMonitor {
       .catch((err) => console.error(err));
   }
 
+  // Added for required brandmetrics image pixels and linkedin script consent (CMP specific vendor consents integration)
+  private attachVendorConsentListeners(): void {
+    enqueueCmpCallback(() => {
+      initVendorConsentListener((vendorConsents: VendorConsentResults) => {
+        const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
+          detail: vendorConsents,
+        });
+
+        window.dispatchEvent(vendorConsentEvent);
+        debug("[CMP Consent lookup Event", vendorConsents);
+      });
+    });
+  }
+
   private attachCmpListeners(): void {
     enqueueCmpCallback(() => {
       const onReady: ConsentReadyHandler = (_l, _u, _t, info) => {
@@ -98,6 +125,15 @@ export class ConsentMonitor {
         } else {
           this.disablePermutive();
         }
+
+        initVendorConsentListener((vendorConsents: VendorConsentResults) => {
+          const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
+            detail: vendorConsents,
+          });
+
+          window.dispatchEvent(vendorConsentEvent);
+          debug("[CMP Consent lookup Event", vendorConsents);
+        });
       };
 
       const onChoice: MessageChoiceHandler = (_l, _c, typeId) => {
