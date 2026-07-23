@@ -19,12 +19,14 @@ interface TCFData {
   vendor?: {
     consents?: Record<number, boolean>;
   };
+  gdprApplies?: boolean | undefined;
 }
 
 export interface VendorConsentResults {
   brandmetrics: boolean;
   linkedIn: boolean;
   purpose1: boolean;
+  gdprApplies: boolean;
 }
 
 export function initVendorConsentListener(
@@ -53,10 +55,13 @@ export function initVendorConsentListener(
       // Purpose 1: Device storage/access (Cookies)
       const purpose1 = tcData.purpose?.consents?.[1] === true;
 
+      const gdprApplies = tcData.gdprApplies !== false ? true : false;
+
       const results: VendorConsentResults = {
         brandmetrics,
         linkedIn,
         purpose1,
+        gdprApplies,
       };
 
       // Trigger your callback handler with the updated states
