@@ -1,8 +1,4 @@
-import {
-  initSourcepointCmp,
-  interceptManageCookiesLinks,
-  properties,
-} from "@financial-times/cmp-client";
+import { interceptManageCookiesLinks } from "@financial-times/cmp-client";
 import Debug from "debug";
 
 import { enqueueCmpCallback, loadFtCmpScript } from "../cmp/loadFtCmp";
@@ -43,6 +39,8 @@ export class ConsentMonitor {
     brandmetrics: false,
     linkedIn: false,
     purpose1: false,
+    gdprApplies: false,
+    usnatApplies: false,
   } as VendorConsentResults;
 
   public get consent(): boolean {
@@ -88,14 +86,6 @@ export class ConsentMonitor {
     // load banner
     loadFtCmpScript()
       .then(() => {
-        const propertyConfig = window.location.hostname.endsWith(".ft.com")
-          ? properties["FT_DOTCOM_PROD"]
-          : properties["FT_DOTCOM_TEST"];
-
-        // initialize CMP
-        initSourcepointCmp({ propertyConfig });
-        // use cmp client lib to intercept footer 'Manage Cookies' links (opens privacy modal)
-        // Note, function requires very specific link: text = 'Manage Cookies' and href = 'https://ft.com/preferences/manage-cookies'
         interceptManageCookiesLinks();
         this._isInitialized = true;
       })
@@ -125,15 +115,6 @@ export class ConsentMonitor {
         } else {
           this.disablePermutive();
         }
-
-        initVendorConsentListener((vendorConsents: VendorConsentResults) => {
-          const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
-            detail: vendorConsents,
-          });
-
-          window.dispatchEvent(vendorConsentEvent);
-          debug("[CMP Consent lookup Event", vendorConsents);
-        });
       };
 
       const onChoice: MessageChoiceHandler = (_l, _c, typeId) => {
@@ -145,8 +126,9 @@ export class ConsentMonitor {
         this._devHosts.map(
           (devHost) =>
             this._hostname.includes(devHost) &&
-            typeId === CMP_CHOICE_ACCEPT_ALL &&
-            this.setDevConsentCookies(),
+            this.setDevConsentCookies(
+              typeId === CMP_CHOICE_ACCEPT_ALL ? true : false,
+            ),
         );
 
         // banner updated - check new cookie value to fire consent_update event
@@ -192,12 +174,12 @@ export class ConsentMonitor {
     }
   };
 
-  setDevConsentCookies = () => {
+  setDevConsentCookies = (allow: boolean) => {
     this._isDevEnvironment = true;
+    const value = allow ? "on" : "off";
     debug("setting development FT consent cookies");
-    document.cookie =
-      "FTConsent=behaviouraladsOnsite%3Aon%2CcookiesOnsite%3Aon%2CpermutiveadsOnsite%3Aon";
-    document.cookie = "FTCookieConsentGDPR=true";
+    document.cookie = `FTConsent=behaviouraladsOnsite%3A${value}%2CcookiesOnsite%3A${value}%2CpermutiveadsOnsite%3A${value}`;
+    document.cookie = `FTCookieConsentGDPR=${allow}`;
   };
 }
 
