@@ -86,7 +86,11 @@ export class ConsentMonitor {
     // load banner
     loadFtCmpScript()
       .then(() => {
-        interceptManageCookiesLinks();
+        const host = this._hostname.split(":")[0].toLowerCase();
+        const isFtDomain = host === "ft.com" || host.endsWith(".ft.com");
+        if (!isFtDomain) {
+          interceptManageCookiesLinks();
+        }
         this._isInitialized = true;
       })
       .catch((err) => console.error(err));
