@@ -69,11 +69,31 @@ export function initVendorConsentListener(
 function evaluateUSNatConsent(
   onConsentUpdate: (results: VendorConsentResults) => void,
 ): void {
-  // Option A: Preferred Sourcepoint SDK method
+  if (typeof window.__gpp === "function") {
+    window.__gpp("addEventListener", (evt, success) => {
+      if (!success || !evt) return;
+      if (
+        (evt.eventName === "signalStatus" &&
+          evt.pingData?.signalStatus === "ready") ||
+        evt.eventName === "postConsent"
+      ) {
+        fetchSourcepointUSNatConsent(onConsentUpdate);
+      }
+    });
+  } else {
+    // Direct fallback if __gpp is unavailable
+    fetchSourcepointUSNatConsent(onConsentUpdate);
+  }
+}
+
+function fetchSourcepointUSNatConsent(
+  onConsentUpdate: (results: VendorConsentResults) => void,
+): void {
   if (typeof window._sp_?.usnat?.getUserConsents === "function") {
     window._sp_.usnat.getUserConsents((consents) => {
-      // US Privacy is OPT-OUT by default, categories[1] = cookies
-      const isConsented = consents?.categories[1].consented;
+      const isConsented =
+        consents?.categories?.[0]?.consented === true &&
+        consents?.categories?.[1]?.consented === true;
 
       onConsentUpdate({
         brandmetrics: isConsented,

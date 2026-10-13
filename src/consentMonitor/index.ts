@@ -123,24 +123,48 @@ export class ConsentMonitor {
 
       const onChoice: MessageChoiceHandler = (_l, _c, typeId) => {
         debug("onMessageChoiceSelect:", typeId);
-        if (typeId === CMP_CHOICE_ACCEPT_ALL) this.enablePermutive();
+        const isAccept = typeId === CMP_CHOICE_ACCEPT_ALL;
+
+        if (isAccept) this.enablePermutive();
         else if (typeId === CMP_CHOICE_REJECT_ALL) this.disablePermutive();
 
         //Simulate cookie consent behaviour in non-prod environments as banner does not set cookies in non .ft.com domains
         this._devHosts.map(
           (devHost) =>
             this._hostname.includes(devHost) &&
-            this.setDevConsentCookies(
-              typeId === CMP_CHOICE_ACCEPT_ALL ? true : false,
-            ),
+            this.setDevConsentCookies(isAccept),
         );
 
-        // banner updated - check new cookie value to fire consent_update event
-        setTimeout(this.cookieConsentTest, 3000);
+        // Re-run vendor consent check immediately after choice is selected
+        this.triggerVendorConsentUpdate();
+
+        // Banner updated - check new cookie value to fire consent_update event
+        setTimeout(this.cookieConsentTest, 1000);
       };
 
-      window._sp_.addEventListener?.("onConsentReady", onReady);
-      window._sp_.addEventListener?.("onMessageChoiceSelect", onChoice);
+      window._sp_?.addEventListener?.("onConsentReady", onReady);
+      window._sp_?.addEventListener?.("onMessageChoiceSelect", onChoice);
+
+      // Additional safety listener for when Sourcepoint completes saving consent
+      window._sp_?.addEventListener?.("onSPFinished", () => {
+        this.triggerVendorConsentUpdate();
+      });
+    });
+  }
+
+  // re-fetch vendor consents and dispatch the CustomEvent
+  private triggerVendorConsentUpdate(): void {
+    initVendorConsentListener((vendorConsents: VendorConsentResults) => {
+      this._vendorConsents = vendorConsents;
+      const vendorConsentEvent = new CustomEvent("cmp_vendorConsent", {
+        detail: vendorConsents,
+      });
+
+      window.dispatchEvent(vendorConsentEvent);
+      debug(
+        "[CMP Consent lookup Event - Post Banner Selection]",
+        vendorConsents,
+      );
     });
   }
 
