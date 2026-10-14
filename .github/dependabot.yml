@@ -7,5 +7,12 @@ version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/" # Location of package manifests
+    rebase-strategy: "auto"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+      time: "08:00"
+    groups:
+      patch-and-minor:
+        update-types:
+          - "minor"
+          - "patch"
