@@ -20,9 +20,12 @@ export function loadFtCmpScript(): Promise<void> {
   });
 }
 
-export function enqueueCmpCallback(cb: () => void): void {
-  if (!window._sp_) window._sp_ = {};
-  if (!window._sp_queue) window._sp_queue = [];
+export function initCmpQueue(): void {
+  window._sp_ = window._sp_ || {};
+  window._sp_queue = window._sp_queue || [];
+}
 
+export function enqueueCmpCallback(cb: () => void): void {
+  initCmpQueue();
   window._sp_queue!.push(cb);
 }

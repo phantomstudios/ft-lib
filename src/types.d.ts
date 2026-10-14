@@ -15,17 +15,44 @@ declare module "@financial-times/cmp-client" {
     propertyConfig?: any;
   }): Promise<void>;
 }
+
+interface TCFData {
+  eventStatus: "tcloaded" | "useractioncomplete" | "cmpuishown";
+  listenerId: number;
+  purpose?: {
+    consents?: Record<number, boolean>;
+  };
+  vendor?: {
+    consents?: Record<number, boolean>;
+  };
+  gdprApplies?: boolean | undefined;
+}
 interface SourcepointCmpAPI {
   queue?: Array<() => void>;
   addEventListener?: (
     eventName: string,
-
     callback: (...args: any[]) => void,
   ) => void;
+  usnat?: {
+    getUserConsents: (callback: (consents: any) => void) => void;
+  };
 }
+
 interface Window {
   _sp_: SourcepointCmpAPI;
   _sp_queue?: Array<() => void>;
+  __tcfapi?: (
+    command: string,
+    version: number,
+    callback: (tcData: TCFData | null, success: boolean) => void,
+    parameter?: any,
+  ) => void;
+  __gpp?: (
+    command: string,
+    callback?: (data: any, success: boolean) => void,
+    parameter?: any,
+  ) => void;
+
   dataLayer: any;
   gtag: any;
   permutive: {
